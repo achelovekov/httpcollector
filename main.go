@@ -70,7 +70,7 @@ func ribhandler(w http.ResponseWriter, r *http.Request) {
 
 		es, _ := elasticsearch.NewClient(cfg)
 
-		res, err := es.Index("golang-index", strings.NewReader(string(data)))
+		res, err := es.Index("golang-index", strings.NewReader(string(empJSON)))
 		if err != nil {
 			log.Fatalf("ERROR: %s", err)
 		}
