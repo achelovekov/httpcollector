@@ -133,6 +133,12 @@ func ribhandler(w http.ResponseWriter, r *http.Request) {
 			log.Print(err)
 		}
 
+		empJSON, err := json.MarshalIndent(response, "", "  ")
+		if err != nil {
+			log.Fatalf(err.Error())
+		}
+		fmt.Println(string(empJSON))
+
 		for _, data := range response.Data {
 
 			var newRib RibGeneric
