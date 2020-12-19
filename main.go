@@ -53,7 +53,7 @@ func ribhandler(w http.ResponseWriter, r *http.Request) {
 			log.Print(err)
 		}
 
-		for i, v := range response.Data {
+		for _, v := range response.Data {
 			fmt.Println(response.VersionStr)
 			fmt.Println(response.NodeIDStr)
 			fmt.Println(response.EncodingPath)
@@ -64,6 +64,7 @@ func ribhandler(w http.ResponseWriter, r *http.Request) {
 			fmt.Println(response.SubscriptionID)
 			fmt.Println(response.SensorGroupID)
 			fmt.Println(response.DataSource)
+			fmt.Println(v)
 		}
 		/*
 			empJSON, err := json.MarshalIndent(response, "", "  ")
