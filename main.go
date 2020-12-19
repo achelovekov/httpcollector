@@ -137,40 +137,48 @@ func ribhandler(w http.ResponseWriter, r *http.Request) {
 
 			var newRib RibGeneric
 
-			newRib.VersionStr = data.VersionStr
-			newRib.NodeIDStr = data.NodeIDStr
-			newRib.EncodingPath = data.EncodingPath
-			newRib.CollectionID = data.CollectionID
-			newRib.CollectionStartTime = data.CollectionStartTime
-			newRib.CollectionEndTime = data.CollectionEndTime
-			newRib.MsgTimestamp = data.MsgTimestamp
-			newRib.SubscriptionID = data.SubscriptionID
-			newRib.SensorGroupID = data.SensorGroupID
-			newRib.DataSource = data.DataSource
+			newRib.VersionStr = response.VersionStr
+			newRib.NodeIDStr = response.NodeIDStr
+			newRib.EncodingPath = response.EncodingPath
+			newRib.CollectionID = response.CollectionID
+			newRib.CollectionStartTime = response.CollectionStartTime
+			newRib.CollectionEndTime = response.CollectionEndTime
+			newRib.MsgTimestamp = response.MsgTimestamp
+			newRib.SubscriptionID = response.SubscriptionID
+			newRib.SensorGroupID = response.SensorGroupID
+			newRib.DataSource = response.DataSource
 			newRib.VrfName = data.VrfName
 			newRib.Address = data.Address
 			newRib.MaskLen = data.MaskLen
 			newRib.L3NextHopCount = data.L3NextHopCount
-			newRib.EventType = data.EventType			
+			newRib.EventType = data.EventType
 
 			if len(data.NextHop) > 0 {
 				for _, nexthop := range data.NextHop {
-					newRib.NextHopAddress = NextHop.NextHopAddress
-					newRib.OutInterface = NextHop.OutInterface
-					newRib.NextHopVrfName = NextHop.NextHopVrfName
-					newRib.Owner = NextHop.Owner
-					newRib.Preference = NextHop.Preference
-					newRib.Metric = NextHop.Metric
-					newRib.Tag = NextHop.Tag
-					newRib.SegmentID = NextHop.SegmentID
-					newRib.TunnelID = NextHop.TunnelID
-					newRib.EncapType = NextHop.EncapType
-					newRib.NhTypeFlags = NextHop.NhTypeFlags
+					newRib.NextHopAddress = nexthop.Address
+					newRib.OutInterface = nexthop.OutInterface
+					newRib.NextHopVrfName = nexthop.VrfName
+					newRib.Owner = nexthop.Owner
+					newRib.Preference = nexthop.Preference
+					newRib.Metric = nexthop.Metric
+					newRib.Tag = nexthop.Tag
+					newRib.SegmentID = nexthop.SegmentID
+					newRib.TunnelID = nexthop.TunnelID
+					newRib.EncapType = nexthop.EncapType
+					newRib.NhTypeFlags = nexthop.NhTypeFlags
+
+					empJSON, err := json.MarshalIndent(newRib, "", "  ")
+					if err != nil {
+						log.Fatalf(err.Error())
 					}
+					fmt.Println(string(empJSON))
+					res, err := es.Index("golang-index", strings.NewReader(string(empJSON)))
+					if err != nil {
+						log.Fatalf("ERROR: %s", err)
+					}
+					log.Println(res)
 				}
-
 			}
-
 			empJSON, err := json.MarshalIndent(newRib, "", "  ")
 			if err != nil {
 				log.Fatalf(err.Error())
@@ -183,32 +191,32 @@ func ribhandler(w http.ResponseWriter, r *http.Request) {
 			log.Println(res)
 		}
 	}
-
-	/*
-		empJSON, err := json.MarshalIndent(response, "", "  ")
-		if err != nil {
-			log.Fatalf(err.Error())
-		}
-		fmt.Println(string(empJSON))
-	*/
-	/*
-		cfg := elasticsearch.Config{
-			Addresses: []string{
-				"http://10.62.186.54:9200",
-			},
-		}
-
-		es, _ := elasticsearch.NewClient(cfg)
-
-		res, err := es.Index("golang-index", strings.NewReader(string(empJSON)))
-		if err != nil {
-			log.Fatalf("ERROR: %s", err)
-		}
-		defer res.Body.Close()
-
-		log.Println(res)
-	*/
 }
+
+/*
+	empJSON, err := json.MarshalIndent(response, "", "  ")
+	if err != nil {
+		log.Fatalf(err.Error())
+	}
+	fmt.Println(string(empJSON))
+*/
+/*
+	cfg := elasticsearch.Config{
+		Addresses: []string{
+			"http://10.62.186.54:9200",
+		},
+	}
+
+	es, _ := elasticsearch.NewClient(cfg)
+
+	res, err := es.Index("golang-index", strings.NewReader(string(empJSON)))
+	if err != nil {
+		log.Fatalf("ERROR: %s", err)
+	}
+	defer res.Body.Close()
+
+	log.Println(res)
+*/
 
 func main() {
 
