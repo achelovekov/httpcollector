@@ -6,9 +6,6 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"strings"
-
-	"github.com/elastic/go-elasticsearch"
 )
 
 type Rib struct {
@@ -56,28 +53,42 @@ func ribhandler(w http.ResponseWriter, r *http.Request) {
 			log.Print(err)
 		}
 
-		empJSON, err := json.MarshalIndent(response, "", "  ")
-		if err != nil {
-			log.Fatalf(err.Error())
+		for i, v := range response.Data {
+			fmt.Println(response.VersionStr)
+			fmt.Println(response.NodeIDStr)
+			fmt.Println(response.EncodingPath)
+			fmt.Println(response.CollectionID)
+			fmt.Println(response.CollectionStartTime)
+			fmt.Println(response.CollectionEndTime)
+			fmt.Println(response.MsgTimestamp)
+			fmt.Println(response.SubscriptionID)
+			fmt.Println(response.SensorGroupID)
+			fmt.Println(response.DataSource)
 		}
-		fmt.Println(string(empJSON))
+		/*
+			empJSON, err := json.MarshalIndent(response, "", "  ")
+			if err != nil {
+				log.Fatalf(err.Error())
+			}
+			fmt.Println(string(empJSON))
+		*/
+		/*
+			cfg := elasticsearch.Config{
+				Addresses: []string{
+					"http://10.62.186.54:9200",
+				},
+			}
 
-		cfg := elasticsearch.Config{
-			Addresses: []string{
-				"http://10.62.186.54:9200",
-			},
-		}
+			es, _ := elasticsearch.NewClient(cfg)
 
-		es, _ := elasticsearch.NewClient(cfg)
+			res, err := es.Index("golang-index", strings.NewReader(string(empJSON)))
+			if err != nil {
+				log.Fatalf("ERROR: %s", err)
+			}
+			defer res.Body.Close()
 
-		res, err := es.Index("golang-index", strings.NewReader(string(empJSON)))
-		if err != nil {
-			log.Fatalf("ERROR: %s", err)
-		}
-		defer res.Body.Close()
-
-		log.Println(res)
-
+			log.Println(res)
+		*/
 	}
 }
 
