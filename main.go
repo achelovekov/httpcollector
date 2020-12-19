@@ -72,7 +72,7 @@ type RibGeneric struct {
 	NodeIDStr           string        `json:"node_id_str"`
 	EncodingPath        string        `json:"encoding_path"`
 	CollectionID        int           `json:"collection_id"`
-	CollectionStartTime string        `json:"collection_start_time"`
+	CollectionStartTime string        `json:"blablabla.collection_start_time"`
 	CollectionEndTime   string        `json:"collection_end_time"`
 	MsgTimestamp        string        `json:"msg_timestamp"`
 	SubscriptionID      string        `json:"subscription_id"`
@@ -154,8 +154,8 @@ func ribhandler(w http.ResponseWriter, r *http.Request) {
 			res, err := es.Index("golang-index", strings.NewReader(string(empJSON)))
 			if err != nil {
 				log.Fatalf("ERROR: %s", err)
-				log.Println(res)
 			}
+			log.Println(res)
 		}
 	}
 
