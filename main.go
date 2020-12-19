@@ -44,6 +44,7 @@ type Rib struct {
 	} `json:"data"`
 }
 
+/*
 type RibDataNextHop struct {
 	Address      string `json:"address"`
 	OutInterface string `json:"outInterface"`
@@ -80,6 +81,36 @@ type RibGeneric struct {
 	DataSource          string        `json:"data_source"`
 	Data                []RibData     `json:"data"`
 }
+*/
+
+type RibGeneric struct {
+	VersionStr          string        `json:"version_str"`
+	NodeIDStr           string        `json:"node_id_str"`
+	EncodingPath        string        `json:"encoding_path"`
+	CollectionID        int           `json:"collection_id"`
+	CollectionStartTime string        `json:"blablabla.collection_start_time"`
+	CollectionEndTime   string        `json:"collection_end_time"`
+	MsgTimestamp        string        `json:"msg_timestamp"`
+	SubscriptionID      string        `json:"subscription_id"`
+	SensorGroupID       []interface{} `json:"sensor_group_id"`
+	DataSource          string        `json:"data_source"`
+	VrfName             string        `json:"data.vrfName"`
+	Address             string        `json:"data.address"`
+	MaskLen             int           `json:"data.maskLen"`
+	L3NextHopCount      int           `json:"data.l3NextHopCount"`
+	EventType           string        `json:"data.eventType"`
+	NextHopAddress      string        `json:"data.nexthop.address"`
+	OutInterface        string        `json:"data.nexthop.outInterface"`
+	NextHopVrfName      string        `json:"data.nexthop.vrfName"`
+	Owner               string        `json:"data.nexthop.owner"`
+	Preference          int           `json:"data.nexthop.preference"`
+	Metric              int           `json:"data.nexthop.metric"`
+	Tag                 int           `json:"data.nexthop.tag"`
+	SegmentID           int           `json:"data.nexthop.segmentId"`
+	TunnelID            int           `json:"data.nexthop.tunnelId"`
+	EncapType           string        `json:"data.nexthop.encapType"`
+	NhTypeFlags         int           `json:"data.nexthop.nhTypeFlags"`
+}
 
 func ribhandler(w http.ResponseWriter, r *http.Request) {
 
@@ -104,48 +135,42 @@ func ribhandler(w http.ResponseWriter, r *http.Request) {
 
 		for _, data := range response.Data {
 
-			ribData := make([]RibData, 1)
-			ribDataNextHop := make([]RibDataNextHop, 1)
+			var newRib RibGeneric
+
+			newRib.VersionStr = data.VersionStr
+			newRib.NodeIDStr = data.NodeIDStr
+			newRib.EncodingPath = data.EncodingPath
+			newRib.CollectionID = data.CollectionID
+			newRib.CollectionStartTime = data.CollectionStartTime
+			newRib.CollectionEndTime = data.CollectionEndTime
+			newRib.MsgTimestamp = data.MsgTimestamp
+			newRib.SubscriptionID = data.SubscriptionID
+			newRib.SensorGroupID = data.SensorGroupID
+			newRib.DataSource = data.DataSource
+			newRib.VrfName = data.VrfName
+			newRib.Address = data.Address
+			newRib.MaskLen = data.MaskLen
+			newRib.L3NextHopCount = data.L3NextHopCount
+			newRib.EventType = data.EventType			
 
 			if len(data.NextHop) > 0 {
 				for _, nexthop := range data.NextHop {
-					ribDataNextHop[0] = RibDataNextHop{
-						Address:      nexthop.Address,
-						OutInterface: nexthop.OutInterface,
-						VrfName:      nexthop.VrfName,
-						Owner:        nexthop.Owner,
-						Preference:   nexthop.Preference,
-						Metric:       nexthop.Metric,
-						Tag:          nexthop.Tag,
-						SegmentID:    nexthop.SegmentID,
-						TunnelID:     nexthop.TunnelID,
-						EncapType:    nexthop.EncapType,
-						NhTypeFlags:  nexthop.NhTypeFlags,
+					newRib.NextHopAddress = NextHop.NextHopAddress
+					newRib.OutInterface = NextHop.OutInterface
+					newRib.NextHopVrfName = NextHop.NextHopVrfName
+					newRib.Owner = NextHop.Owner
+					newRib.Preference = NextHop.Preference
+					newRib.Metric = NextHop.Metric
+					newRib.Tag = NextHop.Tag
+					newRib.SegmentID = NextHop.SegmentID
+					newRib.TunnelID = NextHop.TunnelID
+					newRib.EncapType = NextHop.EncapType
+					newRib.NhTypeFlags = NextHop.NhTypeFlags
 					}
 				}
-			}
-			ribData[0] = RibData{
-				VrfName:        data.VrfName,
-				Address:        data.Address,
-				MaskLen:        data.MaskLen,
-				L3NextHopCount: data.L3NextHopCount,
-				EventType:      data.EventType,
-				NextHop:        ribDataNextHop,
+
 			}
 
-			var newRib = RibGeneric{
-				VersionStr:          response.VersionStr,
-				NodeIDStr:           response.NodeIDStr,
-				EncodingPath:        response.EncodingPath,
-				CollectionID:        response.CollectionID,
-				CollectionStartTime: response.CollectionStartTime,
-				CollectionEndTime:   response.CollectionEndTime,
-				MsgTimestamp:        response.MsgTimestamp,
-				SubscriptionID:      response.SubscriptionID,
-				SensorGroupID:       response.SensorGroupID,
-				DataSource:          response.DataSource,
-				Data:                ribData,
-			}
 			empJSON, err := json.MarshalIndent(newRib, "", "  ")
 			if err != nil {
 				log.Fatalf(err.Error())
