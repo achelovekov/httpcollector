@@ -6,6 +6,9 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strings"
+
+	"github.com/elastic/go-elasticsearch"
 )
 
 type Rib struct {
@@ -79,6 +82,15 @@ type RibGeneric struct {
 }
 
 func ribhandler(w http.ResponseWriter, r *http.Request) {
+
+	cfg := elasticsearch.Config{
+		Addresses: []string{
+			"http://10.62.186.54:9200",
+		},
+	}
+
+	es, _ := elasticsearch.NewClient(cfg)
+
 	switch r.Method {
 	case "POST":
 		data, _ := ioutil.ReadAll(r.Body)
@@ -139,6 +151,11 @@ func ribhandler(w http.ResponseWriter, r *http.Request) {
 				log.Fatalf(err.Error())
 			}
 			fmt.Println(string(empJSON))
+			res, err := es.Index("golang-index", strings.NewReader(string(empJSON)))
+			if err != nil {
+				log.Fatalf("ERROR: %s", err)
+				log.Println(res)
+			}
 		}
 	}
 
