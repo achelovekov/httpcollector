@@ -34,16 +34,16 @@ func FlattenStruct(src interface{}, dst interface{}, baseIndex int) {
 		fmt.Printf("tDst has %v fields\n", nDst)
 
 		for i := 0; i < nSrc-1; i++ {
-			v := vSrc.Field(i).Interface()
+			v := vSrc.Field(i + baseIndex).Interface()
 			switch v.(type) {
 			case string:
-				vDst.Field(i).SetString(v.(string))
+				vDst.Field(i + baseIndex).SetString(v.(string))
 			case int64:
-				vDst.Field(i).SetInt(v.(int64))
+				vDst.Field(i + baseIndex).SetInt(v.(int64))
 			}
 		}
 
-		fmt.Println(vSrc.Field(nSrc - 1).Interface())
+		FlattenStruct(vSrc.Field(nSrc-1).Interface(), &dst, nSrc-1)
 
 	} else if tSrc.Kind() != reflect.Struct {
 		fmt.Printf("ERR: Not a struct value, expected struct value of 'kind' struct\n")
