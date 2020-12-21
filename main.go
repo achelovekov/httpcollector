@@ -35,7 +35,10 @@ func FlattenStruct(src Rib, dst RibGeneric, baseIndex int) {
 
 		for i := 0; i < 3; i++ {
 			v := vSrc.Field(i).Interface()
-			vDst.Field(i).SetString(v.(string))
+			switch v.(type) {
+			case string:
+				vDst.Field(i).SetString(v.(string))
+			}
 		}
 
 		fmt.Println(src, dst, nDst)
