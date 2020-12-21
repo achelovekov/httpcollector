@@ -35,7 +35,8 @@ func FlattenStruct(src interface{}, dst interface{}, baseIndex int) {
 
 		for i := 0; i < nSrc-1; i++ {
 			v := vSrc.Field(i).Interface()
-			vDst.Field(i).SetString(v.(string))
+			fmt.Println(v)
+			//vDst.Field(i).SetString(v.(string))
 		}
 
 		fmt.Println(src, dst, nDst)
