@@ -43,7 +43,9 @@ func FlattenStruct(src interface{}, dst interface{}, baseIndex int) {
 			}
 		}
 
-		//FlattenStruct(vSrc.Field(nSrc-1).Interface(), &dst, nSrc-1)
+		res := vSrc.Field(nSrc - 1).Interface()
+		fmt.Printf("type: %v", reflect.TypeOf(&res))
+		fmt.Printf("type: %v", reflect.TypeOf(res))
 
 	} else if tSrc.Kind() == reflect.Slice {
 		tSrc = reflect.TypeOf(&src)
