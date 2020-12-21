@@ -34,7 +34,7 @@ func FlattenStruct(src interface{}, dst interface{}, baseIndex int) {
 		fmt.Printf("tDst has %v fields\n", nDst)
 
 		for i := 0; i < nSrc; i++ {
-			fmt.Printf("%v %v", vSrc.Type().Field(i).Name, vSrc.Type().Field(i).Type)
+			fmt.Printf("name: %v, type: %v\n", vSrc.Type().Field(i).Name, vSrc.Type().Field(i).Type)
 		}
 
 		sliceLen := vSrc.Field(nSrc - 1).Len()
