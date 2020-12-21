@@ -22,6 +22,9 @@ func FlattenStruct(src interface{}, dst interface{}, baseIndex int) {
 	vSrc := reflect.ValueOf(&src).Elem()
 	vDst := reflect.ValueOf(&dst).Elem() // returns value of the inteface()
 
+	fmt.Printf("vSrc kind is: %v\n", vSrc)
+	fmt.Printf("vDst kind is: %v\n", vDst)
+
 	if tSrc.Kind() != reflect.Slice {
 		nSrc := tSrc.NumField()
 		nDst := tDst.NumField()
