@@ -9,7 +9,7 @@ import (
 	"reflect"
 )
 
-func FlattenStruct(src Rib, dst RibGeneric, baseIndex int) {
+func FlattenStruct(src interface{}, dst interface{}, baseIndex int) {
 	// typeOf wrapped value inside the Interface{}
 	// r is an object with proper methods to each of supertype
 
@@ -19,8 +19,8 @@ func FlattenStruct(src Rib, dst RibGeneric, baseIndex int) {
 	fmt.Printf("tSrc kind is: %v\n", tSrc.Kind())
 	fmt.Printf("tDst kind is: %v\n", tDst.Kind())
 
-	vSrc := reflect.ValueOf(&src).Elem()
-	vDst := reflect.ValueOf(&dst).Elem() // returns value of the inteface()
+	vSrc := reflect.ValueOf(src).Elem()
+	vDst := reflect.ValueOf(dst).Elem()
 
 	fmt.Printf("vSrc kind is: %v\n", vSrc)
 	fmt.Printf("vDst kind is: %v\n", vDst)
@@ -43,7 +43,7 @@ func FlattenStruct(src Rib, dst RibGeneric, baseIndex int) {
 			}
 		}
 
-		fmt.Println(src, dst, nDst)
+		fmt.Println(src, dst)
 
 	} else if tSrc.Kind() != reflect.Struct {
 		fmt.Printf("ERR: Not a struct value, expected struct value of 'kind' struct\n")
