@@ -22,8 +22,8 @@ func FlattenStruct(src interface{}, dst interface{}, baseIndex int) {
 	vSrc := reflect.ValueOf(src).Elem()
 	vDst := reflect.ValueOf(dst).Elem()
 
-	fmt.Printf("vSrc kind is: %v\n", vSrc)
-	fmt.Printf("vDst kind is: %v\n", vDst)
+	//fmt.Printf("vSrc value is: %v\n", vSrc)
+	//fmt.Printf("vDst value is: %v\n", vDst)
 
 	if tSrc.Kind() != reflect.Slice {
 
@@ -43,7 +43,7 @@ func FlattenStruct(src interface{}, dst interface{}, baseIndex int) {
 			}
 		}
 
-		fmt.Println(src, dst)
+		fmt.Println(vSrc.Field(nSrc - 1).Interface())
 
 	} else if tSrc.Kind() != reflect.Struct {
 		fmt.Printf("ERR: Not a struct value, expected struct value of 'kind' struct\n")
