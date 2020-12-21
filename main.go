@@ -9,7 +9,7 @@ import (
 	"reflect"
 )
 
-func FlattenStruct(src interface{}, dst interface{}, baseIndex int) {
+func FlattenStruct(src Rib, dst RibGeneric, baseIndex int) {
 	// typeOf wrapped value inside the Interface{}
 	// r is an object with proper methods to each of supertype
 
