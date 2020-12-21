@@ -131,7 +131,7 @@ func ribhandler(w http.ResponseWriter, r *http.Request) {
 
 		var index int = 0
 
-		FlattenStruct(response, newRib, index)
+		FlattenStruct(&response, &newRib, index)
 	}
 }
 
