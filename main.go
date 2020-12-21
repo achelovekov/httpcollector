@@ -35,6 +35,7 @@ func FlattenStruct(src interface{}, dst interface{}, baseIndex int) {
 
 		for i := 0; i < nSrc-1; i++ {
 			v := vSrc.Field(i + baseIndex).Interface()
+			fmt.Println(tSrc.Field(i).Name)
 			switch v.(type) {
 			case string:
 				vDst.Field(i + baseIndex).SetString(v.(string))
@@ -52,7 +53,6 @@ func FlattenStruct(src interface{}, dst interface{}, baseIndex int) {
 	} else if tSrc.Kind() == reflect.Slice {
 		tSrc = reflect.TypeOf(&src)
 		fmt.Printf("sdf: %v", tSrc)
-		//FlattenStruct(&src[0], &dst, nSrc-1)
 	}
 }
 
