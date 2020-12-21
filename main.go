@@ -26,8 +26,12 @@ func FlattenStruct(src interface{}, dst interface{}, baseIndex int) {
 	fmt.Printf("vDst kind is: %v\n", vDst)
 
 	if tSrc.Kind() != reflect.Slice {
+
 		nSrc := tSrc.NumField()
 		nDst := tDst.NumField()
+
+		fmt.Printf("tSrc has %v fields\n", nSrc)
+		fmt.Printf("tDst has %v fields\n", nDst)
 
 		for i := 0; i < nSrc-1; i++ {
 			v := vSrc.Field(i).Interface().(string)
