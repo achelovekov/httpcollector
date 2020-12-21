@@ -6,10 +6,27 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"strings"
-
-	"github.com/elastic/go-elasticsearch"
+	"reflect"
 )
+
+func printStructInfo(x interface{}) {
+	// typeOf wrapped value inside the Interface{}
+	t := reflect.TypeOf(x)
+	fmt.Printf("-----Kind - %v - ----\n", t.Kind())
+	if t.Kind() != reflect.Struct {
+		fmt.Printf("ERR: Not a struct value, expected struct value of 'kind' struct\n")
+		return
+	}
+
+	n := t.NumField()
+	fmt.Printf("struct of type %v has %v fields\n", t, n)
+
+	for i := 0; i < n; i++ {
+		tt := t.Field(i)
+		fmt.Printf("Field index: %v,\nname: %v,\ntype: %v\n", i, tt.Name, tt.Type)
+	}
+	fmt.Println("-------")
+}
 
 type Rib struct {
 	VersionStr          string        `json:"version_str"`
@@ -44,45 +61,6 @@ type Rib struct {
 	} `json:"data"`
 }
 
-/*
-type RibDataNextHop struct {
-	Address      string `json:"address"`
-	OutInterface string `json:"outInterface"`
-	VrfName      string `json:"vrfName"`
-	Owner        string `json:"owner"`
-	Preference   int    `json:"preference"`
-	Metric       int    `json:"metric"`
-	Tag          int    `json:"tag"`
-	SegmentID    int    `json:"segmentId"`
-	TunnelID     int    `json:"tunnelId"`
-	EncapType    string `json:"encapType"`
-	NhTypeFlags  int    `json:"nhTypeFlags"`
-}
-
-type RibData struct {
-	VrfName        string           `json:"vrfName"`
-	Address        string           `json:"address"`
-	MaskLen        int              `json:"maskLen"`
-	L3NextHopCount int              `json:"l3NextHopCount"`
-	EventType      string           `json:"eventType"`
-	NextHop        []RibDataNextHop `json:"nextHop"`
-}
-
-type RibGeneric struct {
-	VersionStr          string        `json:"version_str"`
-	NodeIDStr           string        `json:"node_id_str"`
-	EncodingPath        string        `json:"encoding_path"`
-	CollectionID        int           `json:"collection_id"`
-	CollectionStartTime string        `json:"blablabla.collection_start_time"`
-	CollectionEndTime   string        `json:"collection_end_time"`
-	MsgTimestamp        string        `json:"msg_timestamp"`
-	SubscriptionID      string        `json:"subscription_id"`
-	SensorGroupID       []interface{} `json:"sensor_group_id"`
-	DataSource          string        `json:"data_source"`
-	Data                []RibData     `json:"data"`
-}
-*/
-
 type RibGeneric struct {
 	VersionStr          string        `json:"version_str"`
 	NodeIDStr           string        `json:"node_id_str"`
@@ -113,116 +91,21 @@ type RibGeneric struct {
 }
 
 func ribhandler(w http.ResponseWriter, r *http.Request) {
-
-	cfg := elasticsearch.Config{
-		Addresses: []string{
-			"http://10.62.186.54:9200",
-		},
-	}
-
-	es, _ := elasticsearch.NewClient(cfg)
-
-	switch r.Method {
-	case "POST":
+	if r.Method != "POST" {
+		fmt.Println("Is not POST method")
+		return
+	} else {
 		data, _ := ioutil.ReadAll(r.Body)
 
 		var response Rib
-		err := json.Unmarshal([]byte(data), &response)
+		err := json.Unmarshal(data, &response)
 
 		if err != nil {
 			log.Print(err)
 		}
-
-		empJSON, err := json.MarshalIndent(response, "", "  ")
-		if err != nil {
-			log.Fatalf(err.Error())
-		}
-		fmt.Println(string(empJSON))
-
-		for _, data := range response.Data {
-
-			var newRib RibGeneric
-
-			newRib.VersionStr = response.VersionStr
-			newRib.NodeIDStr = response.NodeIDStr
-			newRib.EncodingPath = response.EncodingPath
-			newRib.CollectionID = response.CollectionID
-			newRib.CollectionStartTime = response.CollectionStartTime
-			newRib.CollectionEndTime = response.CollectionEndTime
-			newRib.MsgTimestamp = response.MsgTimestamp
-			newRib.SubscriptionID = response.SubscriptionID
-			newRib.SensorGroupID = response.SensorGroupID
-			newRib.DataSource = response.DataSource
-			newRib.VrfName = data.VrfName
-			newRib.Address = data.Address
-			newRib.MaskLen = data.MaskLen
-			newRib.L3NextHopCount = data.L3NextHopCount
-			newRib.EventType = data.EventType
-
-			if len(data.NextHop) > 0 {
-				for _, nexthop := range data.NextHop {
-					newRib.NextHopAddress = nexthop.Address
-					newRib.OutInterface = nexthop.OutInterface
-					newRib.NextHopVrfName = nexthop.VrfName
-					newRib.Owner = nexthop.Owner
-					newRib.Preference = nexthop.Preference
-					newRib.Metric = nexthop.Metric
-					newRib.Tag = nexthop.Tag
-					newRib.SegmentID = nexthop.SegmentID
-					newRib.TunnelID = nexthop.TunnelID
-					newRib.EncapType = nexthop.EncapType
-					newRib.NhTypeFlags = nexthop.NhTypeFlags
-
-					empJSON, err := json.MarshalIndent(newRib, "", "  ")
-					if err != nil {
-						log.Fatalf(err.Error())
-					}
-					fmt.Println(string(empJSON))
-					res, err := es.Index("golang-index", strings.NewReader(string(empJSON)))
-					if err != nil {
-						log.Fatalf("ERROR: %s", err)
-					}
-					log.Println(res)
-				}
-			}
-			empJSON, err := json.MarshalIndent(newRib, "", "  ")
-			if err != nil {
-				log.Fatalf(err.Error())
-			}
-			fmt.Println(string(empJSON))
-			res, err := es.Index("golang-index", strings.NewReader(string(empJSON)))
-			if err != nil {
-				log.Fatalf("ERROR: %s", err)
-			}
-			log.Println(res)
-		}
+		printStructInfo(response)
 	}
 }
-
-/*
-	empJSON, err := json.MarshalIndent(response, "", "  ")
-	if err != nil {
-		log.Fatalf(err.Error())
-	}
-	fmt.Println(string(empJSON))
-*/
-/*
-	cfg := elasticsearch.Config{
-		Addresses: []string{
-			"http://10.62.186.54:9200",
-		},
-	}
-
-	es, _ := elasticsearch.NewClient(cfg)
-
-	res, err := es.Index("golang-index", strings.NewReader(string(empJSON)))
-	if err != nil {
-		log.Fatalf("ERROR: %s", err)
-	}
-	defer res.Body.Close()
-
-	log.Println(res)
-*/
 
 func main() {
 
