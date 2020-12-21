@@ -104,7 +104,7 @@ func ribhandler(w http.ResponseWriter, r *http.Request) {
 			log.Print(err)
 		}
 		printStructInfo(response)
-		for i, v := response.Data {
+		for i, v := range response.Data {
 			printStructInfo(v)
 		}
 	}
