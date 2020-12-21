@@ -43,7 +43,7 @@ func FlattenStruct(src interface{}, dst interface{}, baseIndex int) {
 			}
 		}
 
-		res := vSrc.Field(nSrc - 1).Index(0)
+		res := vSrc.Field(nSrc - 1).Index(0).Interface()
 		fmt.Printf("type: %v", reflect.TypeOf(&res))
 		fmt.Printf("type: %v", reflect.TypeOf(res))
 
