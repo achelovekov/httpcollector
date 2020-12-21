@@ -33,7 +33,7 @@ func FlattenStruct(src interface{}, dst interface{}, baseIndex int) {
 		fmt.Printf("tSrc has %v fields\n", nSrc)
 		fmt.Printf("tDst has %v fields\n", nDst)
 
-		for i := 0; i < nSrc-1; i++ {
+		for i := 0; i < nSrc; i++ {
 			fmt.Println(vSrc.Type().Field(i).Name)
 		}
 
