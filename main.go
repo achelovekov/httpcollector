@@ -43,7 +43,7 @@ func FlattenStruct(src interface{}, dst interface{}, baseIndex int) {
 			}
 		}
 
-		FlattenStruct(vSrc.Field(nSrc-1).Interface(), &dst, nSrc-1)
+		//FlattenStruct(vSrc.Field(nSrc-1).Interface(), &dst, nSrc-1)
 
 	} else if tSrc.Kind() == reflect.Slice {
 		tSrc = reflect.TypeOf(&src)
