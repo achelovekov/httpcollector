@@ -47,16 +47,16 @@ func FlattenStruct(src interface{}, dst interface{}, baseIndex int) {
 }
 
 type Rib struct {
-	VersionStr          string        `json:"version_str"`
-	NodeIDStr           string        `json:"node_id_str"`
-	EncodingPath        string        `json:"encoding_path"`
-	CollectionID        int           `json:"collection_id"`
-	CollectionStartTime string        `json:"collection_start_time"`
-	CollectionEndTime   string        `json:"collection_end_time"`
-	MsgTimestamp        string        `json:"msg_timestamp"`
-	SubscriptionID      string        `json:"subscription_id"`
-	SensorGroupID       []interface{} `json:"sensor_group_id"`
-	DataSource          string        `json:"data_source"`
+	VersionStr          string `json:"version_str"`
+	NodeIDStr           string `json:"node_id_str"`
+	EncodingPath        string `json:"encoding_path"`
+	CollectionID        string `json:"collection_id"`
+	CollectionStartTime string `json:"collection_start_time"`
+	CollectionEndTime   string `json:"collection_end_time"`
+	MsgTimestamp        string `json:"msg_timestamp"`
+	SubscriptionID      string `json:"subscription_id"`
+	SensorGroupID       string `json:"sensor_group_id"`
+	DataSource          string `json:"data_source"`
 	Data                []struct {
 		VrfName        string `json:"vrfName"`
 		Address        string `json:"address"`
