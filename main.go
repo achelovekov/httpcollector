@@ -32,13 +32,13 @@ func FlattenStruct(src interface{}, dst interface{}, baseIndex int) {
 
 		fmt.Printf("tSrc has %v fields\n", nSrc)
 		fmt.Printf("tDst has %v fields\n", nDst)
-
-		for i := 0; i < nSrc-1; i++ {
-			v := vSrc.Field(i).Interface()
-			fmt.Println(v)
-			//vDst.Field(i).SetString(v.(string))
-		}
-
+		/*
+			for i := 0; i < nSrc-1; i++ {
+				v := vSrc.Field(i).Interface()
+				fmt.Println(v)
+				//vDst.Field(i).SetString(v.(string))
+			}
+		*/
 		fmt.Println(src, dst, nDst)
 
 	} else if tSrc.Kind() != reflect.Struct {
