@@ -20,7 +20,7 @@ func FlattenStruct(src Rib, dst RibGeneric, baseIndex int) {
 	fmt.Printf("tDst kind is: %v\n", tDst.Kind())
 
 	vSrc := reflect.ValueOf(&src).Elem()
-	vDst := reflect.ValueOf(&dst).Elem().Elem() // returns value of the inteface()
+	vDst := reflect.ValueOf(&dst).Elem() // returns value of the inteface()
 
 	fmt.Printf("vSrc kind is: %v\n", vSrc)
 	fmt.Printf("vDst kind is: %v\n", vDst)
