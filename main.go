@@ -80,32 +80,32 @@ type Rib struct {
 }
 
 type RibGeneric struct {
-	VersionStr                string        `json:"version_str"`
-	NodeIDStr                 string        `json:"node_id_str"`
-	EncodingPath              string        `json:"encoding_path"`
-	CollectionID              int           `json:"collection_id"`
-	CollectionStartTime       string        `json:"collection_start_time"`
-	CollectionEndTime         string        `json:"collection_end_time"`
-	MsgTimestamp              string        `json:"msg_timestamp"`
-	SubscriptionID            string        `json:"subscription_id"`
-	SensorGroupID             []interface{} `json:"sensor_group_id"`
-	DataSource                string        `json:"data_source"`
-	DataVrfName               string        `json:"data.vrfName"`
-	DataAddress               string        `json:"data.address"`
-	DataMaskLen               int           `json:"data.maskLen"`
-	DataL3NextHopCount        int           `json:"data.l3NextHopCount"`
-	DataNexhHopEventType      string        `json:"data.eventType"`
-	DataNexhHopNextHopAddress string        `json:"data.nexthop.address"`
-	DataNexhHopOutInterface   string        `json:"data.nexthop.outInterface"`
-	DataNexhHopNextHopVrfName string        `json:"data.nexthop.vrfName"`
-	DataNexhHopOwner          string        `json:"data.nexthop.owner"`
-	DataNexhHopPreference     int           `json:"data.nexthop.preference"`
-	DataNexhHopMetric         int           `json:"data.nexthop.metric"`
-	DataNexhHopTag            int           `json:"data.nexthop.tag"`
-	DataNexhHopSegmentID      int           `json:"data.nexthop.segmentId"`
-	DataNexhHopTunnelID       int           `json:"data.nexthop.tunnelId"`
-	DataNexhHopEncapType      string        `json:"data.nexthop.encapType"`
-	DataNexhHopNhTypeFlags    int           `json:"data.nexthop.nhTypeFlags"`
+	VersionStr                string `json:"version_str"`
+	NodeIDStr                 string `json:"node_id_str"`
+	EncodingPath              string `json:"encoding_path"`
+	CollectionID              string `json:"collection_id"`
+	CollectionStartTime       string `json:"collection_start_time"`
+	CollectionEndTime         string `json:"collection_end_time"`
+	MsgTimestamp              string `json:"msg_timestamp"`
+	SubscriptionID            string `json:"subscription_id"`
+	SensorGroupID             string `json:"sensor_group_id"`
+	DataSource                string `json:"data_source"`
+	DataVrfName               string `json:"data.vrfName"`
+	DataAddress               string `json:"data.address"`
+	DataMaskLen               int    `json:"data.maskLen"`
+	DataL3NextHopCount        int    `json:"data.l3NextHopCount"`
+	DataNexhHopEventType      string `json:"data.eventType"`
+	DataNexhHopNextHopAddress string `json:"data.nexthop.address"`
+	DataNexhHopOutInterface   string `json:"data.nexthop.outInterface"`
+	DataNexhHopNextHopVrfName string `json:"data.nexthop.vrfName"`
+	DataNexhHopOwner          string `json:"data.nexthop.owner"`
+	DataNexhHopPreference     int    `json:"data.nexthop.preference"`
+	DataNexhHopMetric         int    `json:"data.nexthop.metric"`
+	DataNexhHopTag            int    `json:"data.nexthop.tag"`
+	DataNexhHopSegmentID      int    `json:"data.nexthop.segmentId"`
+	DataNexhHopTunnelID       int    `json:"data.nexthop.tunnelId"`
+	DataNexhHopEncapType      string `json:"data.nexthop.encapType"`
+	DataNexhHopNhTypeFlags    int    `json:"data.nexthop.nhTypeFlags"`
 }
 
 func ribhandler(w http.ResponseWriter, r *http.Request) {
