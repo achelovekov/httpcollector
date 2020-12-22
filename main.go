@@ -8,23 +8,25 @@ import (
 	"reflect"
 )
 
-func FlattenStruct(src map[string]interface{}, dst map[string]interface{}, prefix string) {
+func FlattenMap(src map[string]interface{}, dst map[string]interface{}, sliceKey string, prefix string) ([]map[string]interface{}, map[string]interface{}, string) {
 	if reflect.TypeOf(src).Kind() == reflect.Map {
 		for k, v := range src {
 			if reflect.TypeOf(v).Kind() != reflect.Slice {
-				//fmt.Printf("key: %v, value: %v\n", k, v)
-				fmt.Println(prefix + "." + k)
-			} else if reflect.TypeOf(v).Kind() == reflect.Slice {
-				//fmt.Printf("prefix: %v\n", k)
-				prefix := prefix + "." + k
-				fmt.Println(prefix + "." + k)
-				s := reflect.ValueOf(v)
-				for i := 0; i < s.Len(); i++ {
-					v := s.Index(i).Interface()
-					FlattenStruct(v.(map[string]interface{}), dst, prefix)
-				}
+				dst[prefix+k] = v
+			} else if reflect.TypeOf(v).Kind() == reflect.Slice && k == sliceKey {
+				prefix := k + "."
+				s := reflect.ValueOf(v).Interface()
+				return s.([]map[string]interface{}), dst, prefix
 			}
 		}
+	}
+
+	return nil, nil, ""
+}
+
+func FlattenSlice(src []map[string]interface{}, dst map[string]interface{}, sliceKey string, prefix string) {
+	for _, v := range src {
+		FlattenMap(v, dst, sliceKey, prefix)
 	}
 }
 
@@ -40,7 +42,8 @@ func ribhandler(w http.ResponseWriter, r *http.Request) {
 		prefix := ""
 		json.Unmarshal(data, &src)
 
-		FlattenStruct(src, dst, prefix)
+		a, b, c := FlattenMap(src, dst, "data", prefix)
+		FlattenSlice(a, b, "nextHop", c)
 	}
 }
 
