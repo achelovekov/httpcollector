@@ -51,7 +51,7 @@ func FlattenStruct(src interface{}, dst interface{}, prefix string) {
 		case reflect.Int64:
 			vDst.FieldByName(dstFieldName).SetInt(srcFieldValue.(int64))
 		case reflect.Slice:
-			fmt.Printf("%v", vDst)
+			fmt.Printf("vDst before slice: %v\n", vDst)
 			sliceLen := vSrc.FieldByName(srcFieldName).Len()
 			for i := 0; i < sliceLen; i++ {
 				vSrc := vSrc.FieldByName(srcFieldName).Index(i)
@@ -60,8 +60,6 @@ func FlattenStruct(src interface{}, dst interface{}, prefix string) {
 			}
 		}
 	}
-	fmt.Println(vDst)
-
 }
 
 type Rib struct {
