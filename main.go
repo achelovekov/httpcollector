@@ -12,12 +12,12 @@ func FlattenStruct(src map[string]interface{}, dst map[string]interface{}, prefi
 	if reflect.TypeOf(src).Kind() == reflect.Map {
 		for k, v := range src {
 			if reflect.TypeOf(v).Kind() != reflect.Slice {
-				fmt.Printf("key: %v, value: %v\n", k, v)
+				//fmt.Printf("key: %v, value: %v\n", k, v)
 				key := k + prefix
 				dst[key] = v
 				fmt.Println(dst)
 			} else if reflect.TypeOf(v).Kind() == reflect.Slice {
-				fmt.Printf("prefix: %v\n", k)
+				//fmt.Printf("prefix: %v\n", k)
 				s := reflect.ValueOf(v)
 				for i := 0; i < s.Len(); i++ {
 					v := s.Index(i).Interface()
