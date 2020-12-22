@@ -9,7 +9,7 @@ import (
 )
 
 func FlattenStruct(src map[string]interface{}, dst map[string]interface{}, prefix string) {
-	fmt.Println(reflect.TypeOf(src))
+	fmt.Println(reflect.TypeOf(src).Kind())
 }
 
 func ribhandler(w http.ResponseWriter, r *http.Request) {
