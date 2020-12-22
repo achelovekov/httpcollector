@@ -42,6 +42,7 @@ func FlattenStruct(src interface{}, dst interface{}, prefix string) {
 		srcFieldName := vSrc.Type().Field(i).Name
 		srcFieldTypeKind := vSrc.Type().Field(i).Type.Kind()
 		srcFieldValue := vSrc.FieldByName(srcFieldName).Interface()
+		fmt.Printf("srcFieldValue: %v", srcFieldValue)
 		dstFieldName := vSrc.Type().Field(i).Name + prefix
 		fmt.Printf("dest field name: %v\n", dstFieldName)
 		switch srcFieldTypeKind {
