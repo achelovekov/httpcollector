@@ -54,9 +54,9 @@ func FlattenStruct(src interface{}, dst interface{}, prefix string) {
 			fmt.Printf("%v", vDst)
 			sliceLen := vSrc.FieldByName(srcFieldName).Len()
 			for i := 0; i < sliceLen; i++ {
-				vSrc := vSrc.FieldByName(srcFieldName).Index(i).Pointer()
+				vSrc := vSrc.FieldByName(srcFieldName).Index(i)
 				fmt.Printf("%v", vSrc)
-				//FlattenStruct(&vSrc, &vDst, srcFieldName)
+				FlattenStruct(&vSrc, &vDst, srcFieldName)
 			}
 		}
 	}
