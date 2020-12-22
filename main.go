@@ -9,7 +9,7 @@ import (
 	"reflect"
 )
 
-func FlattenStruct(src interface{}, dst interface{}, baseIndex int) {
+func FlattenStruct(src interface{}, dst interface{}, prefix string) {
 	// typeOf wrapped value inside the Interface{}
 	// r is an object with proper methods to each of supertype
 
@@ -40,11 +40,12 @@ func FlattenStruct(src interface{}, dst interface{}, baseIndex int) {
 					vSrc.Type().Field(i).Type)
 			*/
 			v := vSrc.FieldByName(vSrc.Type().Field(i).Name).Interface()
+			Name := vSrc.Type().Field(i).Name + prefix
 			switch v.(type) {
 			case string:
-				vDst.FieldByName(vSrc.Type().Field(i).Name).SetString(v.(string))
+				vDst.FieldByName(Name).SetString(v.(string))
 			case int64:
-				vDst.FieldByName(vSrc.Type().Field(i).Name).SetInt(v.(int64))
+				vDst.FieldByName(Name).SetInt(v.(int64))
 			}
 		}
 		fmt.Println(vDst)
@@ -133,9 +134,8 @@ func ribhandler(w http.ResponseWriter, r *http.Request) {
 
 		var newRib RibGeneric
 
-		var index int = 0
-
-		FlattenStruct(&response, &newRib, index)
+		prefix := ""
+		FlattenStruct(&response, &newRib, prefix)
 	}
 }
 
