@@ -9,7 +9,7 @@ import (
 
 func FlattenStruct(src map[string]interface{}, dst map[string]interface{}) {
 	for k, v := range src {
-		fmt.Printf("%v %v", k, v)
+		fmt.Printf("%v %v\n", k, v)
 	}
 }
 
