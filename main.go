@@ -49,7 +49,8 @@ func FlattenStruct(src interface{}, dst interface{}, prefix string) {
 		case reflect.Slice:
 			sliceLen := vSrc.FieldByName(srcFieldName).Len()
 			for i := 0; i < sliceLen; i++ {
-				FlattenStruct(vSrc.FieldByName(srcFieldName).Index(i).Interface(), vDst, srcFieldName)
+				vSrc := vSrc.FieldByName(srcFieldName).Index(i).Interface()
+				FlattenStruct(&vSrc, &vDst, srcFieldName)
 			}
 		}
 	}
