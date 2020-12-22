@@ -39,13 +39,15 @@ func FlattenStruct(src interface{}, dst interface{}, prefix string) {
 					vSrc.Type().Field(i).Name,
 					vSrc.Type().Field(i).Type)
 			*/
-			v := vSrc.FieldByName(vSrc.Type().Field(i).Name).Interface()
-			Name := vSrc.Type().Field(i).Name + prefix
-			switch v.(type) {
-			case string:
-				vDst.FieldByName(Name).SetString(v.(string))
-			case int64:
-				vDst.FieldByName(Name).SetInt(v.(int64))
+			srcFieldName := vSrc.Type().Field(i).Name
+			srcFieldTypeKind := vSrc.Type().Field(i).Type.Kind()
+			srcFieldValue := vSrc.FieldByName(srcFieldName).Interface()
+			dstFieldName := vSrc.Type().Field(i).Name + prefix
+			switch srcFieldTypeKind {
+			case reflect.String:
+				vDst.FieldByName(dstFieldName).SetString(srcFieldValue.(string))
+			case reflect.Int64:
+				vDst.FieldByName(dstFieldName).SetInt(srcFieldValue.(int64))
 			}
 		}
 		fmt.Println(vDst)
