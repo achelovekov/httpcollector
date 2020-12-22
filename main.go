@@ -10,8 +10,10 @@ import (
 
 func FlattenStruct(src map[string]interface{}, dst map[string]interface{}, prefix string) {
 	if reflect.TypeOf(src).Kind() == reflect.Map {
-		for _, v := range src {
-			fmt.Printf("type kind: %v\n", reflect.TypeOf(v).Kind())
+		for k, v := range src {
+			if reflect.TypeOf(v).Kind() != reflect.Slice {
+				fmt.Printf("key: %v, value: %v", k, v)
+			}
 		}
 	}
 }
