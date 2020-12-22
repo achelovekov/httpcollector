@@ -13,7 +13,7 @@ func FlattenStruct(src interface{}, dst interface{}, prefix string) {
 	// typeOf wrapped value inside the Interface{}
 	// r is an object with proper methods to each of supertype
 
-	fmt.Printf("prefix: %v", prefix)
+	fmt.Printf("prefix: %v\n", prefix)
 
 	tSrc := reflect.TypeOf(src)
 	tDst := reflect.TypeOf(dst)
@@ -43,7 +43,7 @@ func FlattenStruct(src interface{}, dst interface{}, prefix string) {
 		srcFieldTypeKind := vSrc.Type().Field(i).Type.Kind()
 		srcFieldValue := vSrc.FieldByName(srcFieldName).Interface()
 		dstFieldName := vSrc.Type().Field(i).Name + prefix
-		fmt.Printf("dest field name: %v", dstFieldName)
+		fmt.Printf("dest field name: %v\n", dstFieldName)
 		switch srcFieldTypeKind {
 		case reflect.String:
 			vDst.FieldByName(dstFieldName).SetString(srcFieldValue.(string))
