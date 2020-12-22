@@ -5,12 +5,11 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"reflect"
 )
 
-func FlattenStruct(src map[string]interface{}, dst map[string]interface{}) {
-	for k, v := range src {
-		fmt.Printf("%v %v\n", k, v)
-	}
+func FlattenStruct(src map[string]interface{}, dst map[string]interface{}, prefix string) {
+	fmt.Println(reflect.TypeOf(src))
 }
 
 func ribhandler(w http.ResponseWriter, r *http.Request) {
@@ -22,14 +21,14 @@ func ribhandler(w http.ResponseWriter, r *http.Request) {
 
 		src := make(map[string]interface{})
 		dst := make(map[string]interface{})
+		prefix := ""
 		json.Unmarshal(data, &src)
 
-		FlattenStruct(src, dst)
+		FlattenStruct(src, dst, prefix)
 	}
 }
 
 func main() {
-
 	http.HandleFunc("/network/rib", ribhandler)
 	http.ListenAndServe(":10000", nil)
 }
