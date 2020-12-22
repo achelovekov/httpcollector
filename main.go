@@ -17,7 +17,7 @@ func FlattenStruct(src map[string]interface{}, dst map[string]interface{}, prefi
 				s := reflect.ValueOf(v)
 				for i := 0; i < s.Len(); i++ {
 					v := s.Index(i).Interface()
-					fmt.Printf("%v", reflect.ValueOf(v))
+					FlattenStruct(v.(map[string]interface{}), dst, prefix)
 				}
 			}
 		}
