@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"reflect"
-	"strings"
 )
 
 func FlattenStruct(src map[string]interface{}, dst map[string]interface{}, prefix string) {
@@ -14,10 +13,11 @@ func FlattenStruct(src map[string]interface{}, dst map[string]interface{}, prefi
 		for k, v := range src {
 			if reflect.TypeOf(v).Kind() != reflect.Slice {
 				//fmt.Printf("key: %v, value: %v\n", k, v)
-				fmt.Println(strings.Title(prefix + k))
+				fmt.Println(prefix)
 			} else if reflect.TypeOf(v).Kind() == reflect.Slice {
 				//fmt.Printf("prefix: %v\n", k)
-				prefix := strings.Title(prefix + k)
+				prefix := prefix + "." + k
+				fmt.Println(prefix)
 				s := reflect.ValueOf(v)
 				for i := 0; i < s.Len(); i++ {
 					v := s.Index(i).Interface()
