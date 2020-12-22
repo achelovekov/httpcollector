@@ -47,16 +47,16 @@ func FlattenStruct(src interface{}, dst interface{}, prefix string) {
 		fmt.Printf("dstFieldName: %v\n", dstFieldName)
 		switch srcFieldTypeKind {
 		case reflect.String:
-			fmt.Printf("goes here -> String kind\n")
-			fmt.Printf("string to set: %v\n", srcFieldValue)
-			vDst.FieldByName(dstFieldName).SetString("abc")
+			vDst.FieldByName(dstFieldName).SetString(srcFieldValue.(string))
 		case reflect.Int64:
 			vDst.FieldByName(dstFieldName).SetInt(srcFieldValue.(int64))
 		case reflect.Slice:
+			fmt.Printf("%v", vDst)
 			sliceLen := vSrc.FieldByName(srcFieldName).Len()
 			for i := 0; i < sliceLen; i++ {
 				vSrc := vSrc.FieldByName(srcFieldName).Index(i).Pointer()
-				FlattenStruct(&vSrc, &vDst, srcFieldName)
+				fmt.Printf("%v", vSrc)
+				//FlattenStruct(&vSrc, &vDst, srcFieldName)
 			}
 		}
 	}
