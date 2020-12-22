@@ -19,8 +19,8 @@ func FlattenStruct(src interface{}, dst interface{}, prefix string) {
 	fmt.Printf("tSrc kind is: %v\n", tSrc.Kind())
 	fmt.Printf("tDst kind is: %v\n", tDst.Kind())
 
-	vSrc := reflect.ValueOf(src).Elem()
-	vDst := reflect.ValueOf(dst).Elem()
+	vSrc := reflect.ValueOf(src)
+	vDst := reflect.ValueOf(dst)
 
 	//fmt.Printf("vSrc value is: %v\n", vSrc)
 	//fmt.Printf("vDst value is: %v\n", vDst)
@@ -50,7 +50,7 @@ func FlattenStruct(src interface{}, dst interface{}, prefix string) {
 			sliceLen := vSrc.FieldByName(srcFieldName).Len()
 			for i := 0; i < sliceLen; i++ {
 				vSrc := vSrc.FieldByName(srcFieldName).Index(i).Interface()
-				FlattenStruct(&vSrc, &vDst, srcFieldName)
+				FlattenStruct(vSrc, vDst, srcFieldName)
 			}
 		}
 	}
@@ -137,7 +137,7 @@ func ribhandler(w http.ResponseWriter, r *http.Request) {
 		var newRib RibGeneric
 
 		prefix := ""
-		FlattenStruct(&response, &newRib, prefix)
+		FlattenStruct(response, newRib, prefix)
 	}
 }
 
