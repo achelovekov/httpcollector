@@ -32,11 +32,11 @@ func FlattenStruct(src interface{}, dst interface{}, prefix string) {
 	fmt.Printf("tDst has %v fields\n", nDst)
 
 	for i := 0; i < nSrc; i++ {
-		/*
-			fmt.Printf("name: %v, type: %v\n",
-				vSrc.Type().Field(i).Name,
-				vSrc.Type().Field(i).Type)
-		*/
+
+		fmt.Printf("name: %v, type: %v\n",
+			vSrc.Type().Field(i).Name,
+			vSrc.Type().Field(i).Type)
+
 		srcFieldName := vSrc.Type().Field(i).Name
 		srcFieldTypeKind := vSrc.Type().Field(i).Type.Kind()
 		srcFieldValue := vSrc.FieldByName(srcFieldName).Interface()
