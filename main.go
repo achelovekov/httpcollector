@@ -25,42 +25,36 @@ func FlattenStruct(src interface{}, dst interface{}, prefix string) {
 	//fmt.Printf("vSrc value is: %v\n", vSrc)
 	//fmt.Printf("vDst value is: %v\n", vDst)
 
-	if tSrc.Kind() != reflect.Slice {
+	nSrc := vSrc.NumField()
+	nDst := vDst.NumField()
 
-		nSrc := vSrc.NumField()
-		nDst := vDst.NumField()
+	fmt.Printf("tSrc has %v fields\n", nSrc)
+	fmt.Printf("tDst has %v fields\n", nDst)
 
-		fmt.Printf("tSrc has %v fields\n", nSrc)
-		fmt.Printf("tDst has %v fields\n", nDst)
-
-		for i := 0; i < nSrc; i++ {
-			/*
-				fmt.Printf("name: %v, type: %v\n",
-					vSrc.Type().Field(i).Name,
-					vSrc.Type().Field(i).Type)
-			*/
-			srcFieldName := vSrc.Type().Field(i).Name
-			srcFieldTypeKind := vSrc.Type().Field(i).Type.Kind()
-			srcFieldValue := vSrc.FieldByName(srcFieldName).Interface()
-			dstFieldName := vSrc.Type().Field(i).Name + prefix
-			switch srcFieldTypeKind {
-			case reflect.String:
-				vDst.FieldByName(dstFieldName).SetString(srcFieldValue.(string))
-			case reflect.Int64:
-				vDst.FieldByName(dstFieldName).SetInt(srcFieldValue.(int64))
-			case reflect.Slice:
-				sliceLen := vSrc.FieldByName(srcFieldName).Len()
-				for i := 0; i < sliceLen; i++ {
-					FlattenStruct(vSrc.FieldByName(srcFieldName).Interface(), vDst, srcFieldName)
-				}
+	for i := 0; i < nSrc; i++ {
+		/*
+			fmt.Printf("name: %v, type: %v\n",
+				vSrc.Type().Field(i).Name,
+				vSrc.Type().Field(i).Type)
+		*/
+		srcFieldName := vSrc.Type().Field(i).Name
+		srcFieldTypeKind := vSrc.Type().Field(i).Type.Kind()
+		srcFieldValue := vSrc.FieldByName(srcFieldName).Interface()
+		dstFieldName := vSrc.Type().Field(i).Name + prefix
+		switch srcFieldTypeKind {
+		case reflect.String:
+			vDst.FieldByName(dstFieldName).SetString(srcFieldValue.(string))
+		case reflect.Int64:
+			vDst.FieldByName(dstFieldName).SetInt(srcFieldValue.(int64))
+		case reflect.Slice:
+			sliceLen := vSrc.FieldByName(srcFieldName).Len()
+			for i := 0; i < sliceLen; i++ {
+				FlattenStruct(vSrc.FieldByName(srcFieldName).Interface(), vDst, srcFieldName)
 			}
 		}
-		fmt.Println(vDst)
-
-	} else if tSrc.Kind() == reflect.Slice {
-		tSrc = reflect.TypeOf(&src)
-		fmt.Printf("sdf: %v", tSrc)
 	}
+	fmt.Println(vDst)
+
 }
 
 type Rib struct {
