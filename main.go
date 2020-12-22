@@ -48,6 +48,11 @@ func FlattenStruct(src interface{}, dst interface{}, prefix string) {
 				vDst.FieldByName(dstFieldName).SetString(srcFieldValue.(string))
 			case reflect.Int64:
 				vDst.FieldByName(dstFieldName).SetInt(srcFieldValue.(int64))
+			case reflect.Slice:
+				sliceLen := vSrc.FieldByName(srcFieldName).Len()
+				for i := 0; i < sliceLen; i++ {
+					FlattenStruct(vSrc.FieldByName(srcFieldName).Interface(), vDst, srcFieldName)
+				}
 			}
 		}
 		fmt.Println(vDst)
