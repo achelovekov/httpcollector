@@ -16,20 +16,21 @@ func mapToSlice(src map[string]interface{}, key string) []interface{} {
 
 	for k, v := range src {
 		if k != key {
-			switch v.(type) {
-			case string:
+			vType := reflect.ValueOf(v).Type().Kind()
+			switch vType {
+			case reflect.String:
 				val := make([]interface{}, 2)
 				val[0] = k
 				val[1] = v.(string)
 				sli[i] = val
 				i = i + 1
-			case int:
+			case reflect.Int64:
 				val := make([]interface{}, 2)
 				val[0] = k
 				val[1] = v.(int)
 				sli[i] = val
 				i = i + 1
-			case float64:
+			case reflect.Float64:
 				val := make([]interface{}, 2)
 				val[0] = k
 				val[1] = v.(float64)
@@ -39,11 +40,12 @@ func mapToSlice(src map[string]interface{}, key string) []interface{} {
 
 		}
 	}
-	if len(key) != 0 {
 
+	if reflect.ValueOf(src[key]).Len() == 0 {
+		sli[len(src)-1] = make([]interface{}, 2)
+	} else {
+		sli[len(src)-1] = []interface{}{key, src[key]}
 	}
-	sli[len(src)-1] = []interface{}{key, src[key]}
-
 	nilIndexes := make([]int, 0)
 
 	for i, v := range sli {
