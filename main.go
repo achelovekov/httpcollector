@@ -126,6 +126,12 @@ func ribhandler(w http.ResponseWriter, r *http.Request) {
 			panic(err)
 		}
 
+		srcJSON, err := json.MarshalIndent(src, "", "  ")
+		if err != nil {
+			log.Fatalf(err.Error())
+		}
+		fmt.Printf("MarshalIndent funnction output %s\n", string(srcJSON))
+
 		if err != nil {
 			log.Fatalf(err.Error())
 		}
