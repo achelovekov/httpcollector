@@ -120,7 +120,8 @@ func main() {
 		"bikes": [
 			{"bike1":"Honda","bike2":"Suza","bike3":"Pina"},
 			{"bike1":"Bona","bike2":"Izha","bike3":"Turbo"}
-			]
+			],
+		"cities": []
 	}
 `
 
@@ -131,9 +132,6 @@ func main() {
 		panic(err)
 	}
 
-	if err != nil {
-		log.Fatalf(err.Error())
-	}
 	keysSlice := []string{"cars", "carts"}
 
 	Flatten(jsonMap, dst, keysSlice, "")

@@ -3,7 +3,9 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
+	"net/http"
 	"reflect"
 )
 
@@ -110,32 +112,30 @@ func Flatten(src interface{}, dst map[string]interface{}, keysSlice []string, pr
 	}
 }
 
+func ribhandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		fmt.Println("Is not POST method")
+		return
+	} else {
+		data, _ := ioutil.ReadAll(r.Body)
+
+		src := make(map[string]interface{})
+		dst := make(map[string]interface{})
+		err := json.Unmarshal(data, &src)
+		if err != nil {
+			panic(err)
+		}
+
+		if err != nil {
+			log.Fatalf(err.Error())
+		}
+		keysSlice := []string{"data", "nextHop"}
+
+		Flatten(src, dst, keysSlice, "")
+	}
+}
+
 func main() {
-	var jsonStr = `
-	{
-		"name":"John",
-		"age":30,
-		"cars": [{"car1":"Ford","car2":"BMW","carts": [{"model1": "9.5hp","color":"green"},{"model1": "20hp", "color": "red"}]},
-				{"car1":"Mazda","car2":"Porsche","carts": [{"model1": "12hp", "color":"yellow"},{"model1": "123hp", "color": "brown"}]}],
-		"bikes": [
-			{"bike1":"Honda","bike2":"Suza","bike3":"Pina"},
-			{"bike1":"Bona","bike2":"Izha","bike3":"Turbo"}
-			]
-	}
-`
-
-	jsonMap := make(map[string]interface{})
-	dst := make(map[string]interface{})
-	err := json.Unmarshal([]byte(jsonStr), &jsonMap)
-	if err != nil {
-		panic(err)
-	}
-
-	if err != nil {
-		log.Fatalf(err.Error())
-	}
-	keysSlice := []string{"cars", "carts"}
-
-	Flatten(jsonMap, dst, keysSlice, "")
-
+	http.HandleFunc("/network/rib", ribhandler)
+	http.ListenAndServe(":10000", nil)
 }
