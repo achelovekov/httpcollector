@@ -3,16 +3,29 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"reflect"
 )
 
-func combineHeaders(src map[string]interface{}, pathIndex int) (map[string]interface{}, int) {
+func PrettyPrint(src map[string]interface{}) {
+	empJSON, err := json.MarshalIndent(src, "", "  ")
+	if err != nil {
+		log.Fatalf(err.Error())
+	}
+	fmt.Printf("MarshalIndent function output %s\n", string(empJSON))
+}
+
+func combineHeaders(src map[string]interface{}, pathIndex int, path []string) (map[string]interface{}, int) {
 
 	header := make(map[string]interface{})
 
 	for k, v := range src {
 		if reflect.ValueOf(v).Type().Kind() != reflect.Slice {
-			header[k] = reflect.ValueOf(v).Interface()
+			if pathIndex == 0 {
+				header[k] = reflect.ValueOf(v).Interface()
+			} else {
+				header[path[pathIndex-1]+"."+k] = reflect.ValueOf(v).Interface()
+			}
 		}
 	}
 
@@ -21,7 +34,7 @@ func combineHeaders(src map[string]interface{}, pathIndex int) (map[string]inter
 
 func Flatten(src map[string]interface{}, path []string, pathIndex int, header map[string]interface{}) {
 
-	addHeader, pathIndex := combineHeaders(src, pathIndex)
+	addHeader, pathIndex := combineHeaders(src, pathIndex, path)
 	newHeader := make(map[string]interface{})
 
 	for k, v := range addHeader {
@@ -33,17 +46,16 @@ func Flatten(src map[string]interface{}, path []string, pathIndex int, header ma
 	}
 
 	if pathIndex == len(path) {
-		fmt.Printf("%v\n", newHeader)
+		PrettyPrint(newHeader)
 	} else if reflect.ValueOf(src[path[pathIndex]]).Len() == 0 {
 		newHeader[path[pathIndex]] = make([]interface{}, 0)
-		fmt.Printf("%v\n", newHeader)
+		PrettyPrint(newHeader)
 	} else {
 		for i := 0; i < reflect.ValueOf(src[path[pathIndex]]).Len(); i++ {
 			v := reflect.ValueOf(src[path[pathIndex]]).Index(i).Interface()
 			Flatten(v.(map[string]interface{}), path, pathIndex+1, newHeader)
 		}
 	}
-
 }
 
 func main() {
@@ -96,7 +108,7 @@ func main() {
 		panic(err)
 	}
 
-	path := []string{"f1"}
+	path := []string{"d1", "c2"}
 
 	var pathIndex int
 
