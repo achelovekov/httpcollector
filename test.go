@@ -63,12 +63,12 @@ func mapToSlice(src map[string]interface{}, key string) []interface{} {
 
 }
 
-func Flatten(src interface{}, dst map[string]interface{}, keysSlice []string, prefix string) {
+func Flatten(src interface{}, dst map[string]interface{}, keysSlice []string, path string) {
 
 	jsonMap := src.(map[string]interface{})
 
-	if len(prefix) > 0 {
-		prefix = prefix + "."
+	if len(path) > 0 {
+		path = path + "."
 	}
 	if len(keysSlice) > 0 {
 
@@ -79,10 +79,10 @@ func Flatten(src interface{}, dst map[string]interface{}, keysSlice []string, pr
 			value := reflect.ValueOf(v).Index(1).Interface()
 
 			if reflect.ValueOf(value).Type().Kind() != reflect.Slice {
-				dst[prefix+key] = value
+				dst[path+key] = value
 			} else if reflect.ValueOf(key).Interface().(string) == keysSlice[0] {
 
-				prefix = prefix + key
+				path = path + key
 
 				keysSliceCopy := make([]string, len(keysSlice))
 				copy(keysSliceCopy, keysSlice)
@@ -91,7 +91,7 @@ func Flatten(src interface{}, dst map[string]interface{}, keysSlice []string, pr
 
 				for i := 0; i < reflect.ValueOf(value).Len(); i++ {
 					res := reflect.ValueOf(jsonMap[key]).Index(i).Interface()
-					Flatten(res, dst, keysSliceCopy, prefix)
+					Flatten(res, dst, keysSliceCopy, path)
 				}
 
 			}
@@ -99,7 +99,7 @@ func Flatten(src interface{}, dst map[string]interface{}, keysSlice []string, pr
 	} else {
 		for k, v := range jsonMap {
 			if reflect.ValueOf(v).Type().Kind() != reflect.Slice {
-				dst[prefix+k] = v
+				dst[path+k] = v
 			}
 		}
 	}
