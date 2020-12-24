@@ -71,7 +71,7 @@ func Flatten(src interface{}, dst map[string]interface{}, keysSlice []string, pa
 		path = path + "."
 	}
 	if len(keysSlice) > 0 {
-
+		fmt.Println("Goes keysSlice > 0")
 		jsonSlice := mapToSlice(jsonMap, keysSlice[0])
 
 		for _, v := range jsonSlice {
@@ -80,6 +80,19 @@ func Flatten(src interface{}, dst map[string]interface{}, keysSlice []string, pa
 
 			if reflect.ValueOf(value).Type().Kind() != reflect.Slice {
 				dst[path+key] = value
+
+				if key == keysSlice[0] && value == "null" {
+					delete(dst, "cars.carts.color")
+					delete(dst, "cars.carts.model1")
+
+					emp, err := json.MarshalIndent(dst, "", "  ")
+					if err != nil {
+						log.Fatalf(err.Error())
+					}
+					fmt.Printf("Flattened output: %s\n", string(emp))
+
+				}
+				delete(dst, "car.carts")
 			} else if reflect.ValueOf(key).Interface().(string) == keysSlice[0] {
 
 				path = path + key
@@ -97,6 +110,7 @@ func Flatten(src interface{}, dst map[string]interface{}, keysSlice []string, pa
 			}
 		}
 	} else {
+		fmt.Println("goes here--->")
 		for k, v := range jsonMap {
 			if reflect.ValueOf(v).Type().Kind() != reflect.Slice {
 				dst[path+k] = v
@@ -117,8 +131,12 @@ func main() {
 	{
 		"name":"John",
 		"age":30,
-		"cars": [{"car1":"Ford","car2":"BMW","carts": [{"model1": "9.5hp","color":"green"},{"model1": "20hp", "color": "red"}]},
-				{"car1":"Mazda","car2":"Porsche","carts": []}],
+		"cars": [{"car1":"Ford","car2":"BMW","carts": 
+					[{"model1": "9.5hp","color":"green"},{"model1": "20hp", "color": "red"}]},
+				{"car1":"Mazda","car2":"Porsche","carts": []},
+				{"car1":"Opel","car2":"Audi","carts": 
+					[{"model1": "777hp","color":"green"},{"model1": "555hp", "color": "red"}]}
+				],
 		"bikes": [
 			{"bike1":"Honda","bike2":"Suza","bike3":"Pina"},
 			{"bike1":"Bona","bike2":"Izha","bike3":"Turbo"}
