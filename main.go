@@ -148,15 +148,15 @@ func adjacencyHandler(w http.ResponseWriter, r *http.Request) {
 			log.Fatalf(err.Error())
 		}
 		fmt.Printf("MarshalIndent function output %s\n", string(srcJSON))
-		/*
-			var pathIndex int
 
-			header := make(map[string]interface{})
+		var pathIndex int
 
-			path := []string{"data", "list"}
+		header := make(map[string]interface{})
 
-			Flatten(src, path, pathIndex, header)
-		*/
+		path := []string{"data"}
+
+		Flatten(src, path, pathIndex, header)
+
 	}
 }
 
