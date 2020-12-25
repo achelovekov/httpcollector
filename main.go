@@ -194,6 +194,6 @@ func main() {
 	http.HandleFunc("/network/rib", ribhandler)
 	http.HandleFunc("/network/mac-all", macAllHandler)
 	http.HandleFunc("/network/adjacency", adjacencyHandler)
-	http.HandleFunc("/network/vxlan", vxlanHandler)
+	http.HandleFunc("/network/EVENT-LIST", vxlanHandler)
 	http.ListenAndServe(":10000", nil)
 }
