@@ -19,12 +19,20 @@ func combineHeaders(src map[string]interface{}, pathIndex int, path []string) (m
 
 	header := make(map[string]interface{})
 
-	for k, v := range src {
-		if reflect.ValueOf(v).Type().Kind() != reflect.Slice {
+	for k1, v := range src {
+		if reflect.ValueOf(v).Type().Kind() != reflect.Slice && reflect.ValueOf(v).Type().Kind() != reflect.Map {
 			if pathIndex == 0 {
-				header[k] = reflect.ValueOf(v).Interface()
+				header[k1] = reflect.ValueOf(v).Interface()
 			} else {
-				header[path[pathIndex-1]+"."+k] = reflect.ValueOf(v).Interface()
+				header[path[pathIndex-1]+"."+k1] = reflect.ValueOf(v).Interface()
+			}
+		} else if reflect.ValueOf(v).Type().Kind() == reflect.Map {
+			for k2, v := range src[k1].(map[string]interface{}) {
+				if pathIndex == 0 {
+					header[k1+"."+k2] = reflect.ValueOf(v).Interface()
+				} else {
+					header[path[pathIndex-1]+"."+k1+"."+k2] = reflect.ValueOf(v).Interface()
+				}
 			}
 		}
 	}
@@ -67,7 +75,10 @@ func main() {
 		"d1": [
 		  {
 			"a2": "value-a2-01",
-			"b2": "value-b2-02",
+			"b2": {
+				"a4": "value-a4",
+				"b4": "value-b4"
+			  },
 			"c2": [
 			  {
 				"a3": "value-a3-01",

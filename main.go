@@ -21,12 +21,20 @@ func combineHeaders(src map[string]interface{}, pathIndex int, path []string) (m
 
 	header := make(map[string]interface{})
 
-	for k, v := range src {
-		if reflect.ValueOf(v).Type().Kind() != reflect.Slice {
+	for k1, v := range src {
+		if reflect.ValueOf(v).Type().Kind() != reflect.Slice && reflect.ValueOf(v).Type().Kind() != reflect.Map {
 			if pathIndex == 0 {
-				header[k] = reflect.ValueOf(v).Interface()
+				header[k1] = reflect.ValueOf(v).Interface()
 			} else {
-				header[path[pathIndex-1]+"."+k] = reflect.ValueOf(v).Interface()
+				header[path[pathIndex-1]+"."+k1] = reflect.ValueOf(v).Interface()
+			}
+		} else if reflect.ValueOf(v).Type().Kind() == reflect.Map {
+			for k2, v := range src[k1].(map[string]interface{}) {
+				if pathIndex == 0 {
+					header[k1+"."+k2] = reflect.ValueOf(v).Interface()
+				} else {
+					header[path[pathIndex-1]+"."+k1+"."+k2] = reflect.ValueOf(v).Interface()
+				}
 			}
 		}
 	}
@@ -111,6 +119,14 @@ func macAllHandler(w http.ResponseWriter, r *http.Request) {
 			log.Fatalf(err.Error())
 		}
 		fmt.Printf("MarshalIndent function output %s\n", string(srcJSON))
+
+		var pathIndex int
+
+		header := make(map[string]interface{})
+
+		path := []string{"data", "list"}
+
+		Flatten(src, path, pathIndex, header)
 	}
 }
 
