@@ -160,9 +160,40 @@ func adjacencyHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func vxlanHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		fmt.Println("Is not POST method")
+		return
+	} else {
+		data, _ := ioutil.ReadAll(r.Body)
+
+		src := make(map[string]interface{})
+		err := json.Unmarshal(data, &src)
+		if err != nil {
+			panic(err)
+		}
+
+		srcJSON, err := json.MarshalIndent(src, "", "  ")
+		if err != nil {
+			log.Fatalf(err.Error())
+		}
+		fmt.Printf("MarshalIndent function output %s\n", string(srcJSON))
+		/*
+			var pathIndex int
+
+			header := make(map[string]interface{})
+
+			path := []string{"data"}
+
+			Flatten(src, path, pathIndex, header)
+		*/
+	}
+}
+
 func main() {
 	http.HandleFunc("/network/rib", ribhandler)
 	http.HandleFunc("/network/mac-all", macAllHandler)
 	http.HandleFunc("/network/adjacency", adjacencyHandler)
+	http.HandleFunc("/network/vxlan", vxlanHandler)
 	http.ListenAndServe(":10000", nil)
 }
