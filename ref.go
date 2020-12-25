@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"reflect"
+	"strings"
 )
 
 func PrettyPrint(src map[string]interface{}) {
@@ -15,26 +16,55 @@ func PrettyPrint(src map[string]interface{}) {
 	fmt.Printf("MarshalIndent function output %s\n", string(empJSON))
 }
 
+func flattenMap(src map[string]interface{}, preHeader map[string]interface{}, path []string, pathIndex int, prefix string) map[string]interface{} {
+
+	for k, v := range src {
+		fmt.Printf("path: %v, prefix in flatten: %v\n", strings.Join(path[:pathIndex], "."), prefix)
+
+		if reflect.ValueOf(v).Type().Kind() != reflect.Map {
+			preHeader[strings.Join(path[:pathIndex], ".")+"."+prefix+"."+k] = v
+			fmt.Println(preHeader)
+		} else if reflect.ValueOf(v).Type().Kind() == reflect.Map {
+			prefix = prefix + "." + k
+			flattenMap(src, preHeader, path, pathIndex, prefix)
+		}
+
+	}
+	fmt.Printf("Preheader: %v\n", preHeader)
+	return preHeader
+}
+
 func combineHeaders(src map[string]interface{}, pathIndex int, path []string) (map[string]interface{}, int) {
 
 	header := make(map[string]interface{})
+	mapsKeys := make(map[int]string)
 
-	for k1, v := range src {
+	var i int
+
+	for k, v := range src {
 		if reflect.ValueOf(v).Type().Kind() != reflect.Slice && reflect.ValueOf(v).Type().Kind() != reflect.Map {
 			if pathIndex == 0 {
-				header[k1] = reflect.ValueOf(v).Interface()
+				header[k] = reflect.ValueOf(v).Interface()
 			} else {
-				header[path[pathIndex-1]+"."+k1] = reflect.ValueOf(v).Interface()
+				header[strings.Join(path[:pathIndex], ".")+"."+k] = reflect.ValueOf(v).Interface()
 			}
 		} else if reflect.ValueOf(v).Type().Kind() == reflect.Map {
-			for k2, v := range src[k1].(map[string]interface{}) {
-				if pathIndex == 0 {
-					header[k1+"."+k2] = reflect.ValueOf(v).Interface()
-				} else {
-					header[path[pathIndex-1]+"."+k1+"."+k2] = reflect.ValueOf(v).Interface()
-				}
-			}
+			mapsKeys[i] = k
+			i = i + 1
 		}
+	}
+
+	if len(mapsKeys) > 0 {
+		for _, v := range mapsKeys {
+			preHeader := make(map[string]interface{})
+			for k, v := range header {
+				preHeader[k] = v
+			}
+			prefix := v
+			fmt.Printf("prefix before flatten: %v\n", prefix)
+			header = flattenMap(reflect.ValueOf(src[v]).Interface().(map[string]interface{}), preHeader, path, pathIndex, prefix)
+		}
+
 	}
 
 	return header, pathIndex
@@ -74,10 +104,13 @@ func main() {
 		"c1": "value-c1",
 		"d1": [
 		  {
-			"a2": "value-a2-01",
+			"a2": {
+				"a5": "value-a5",
+				"b5": "value-b5"
+			  },
 			"b2": {
-				"a4": "value-a4",
-				"b4": "value-b4"
+				"a6": "value-a6",
+				"b6": "value-b6"
 			  },
 			"c2": [
 			  {
