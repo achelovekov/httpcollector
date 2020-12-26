@@ -15,7 +15,7 @@ func PrettyPrint(src map[string]interface{}) {
 	if err != nil {
 		log.Fatalf(err.Error())
 	}
-	fmt.Printf("MarshalIndent function output %s\n", string(empJSON))
+	fmt.Printf("Pretty processed output %s\n", string(empJSON))
 }
 
 func flattenMap(src map[string]interface{}, preHeader map[string]interface{}, path []string, pathIndex int, prefix string) map[string]interface{} {
