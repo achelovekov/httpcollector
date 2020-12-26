@@ -213,7 +213,7 @@ func vxlanHandler(w http.ResponseWriter, r *http.Request) {
 
 		header := make(map[string]interface{})
 
-		path := []string{"data"}
+		path := []string{"data", "imdata"}
 
 		Flatten(src, path, pathIndex, header)
 
