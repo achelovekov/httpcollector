@@ -26,7 +26,7 @@ func flattenMap(src map[string]interface{}, preHeader map[string]interface{}, pa
 			fmt.Println(preHeader)
 		} else if reflect.ValueOf(v).Type().Kind() == reflect.Map {
 			prefix = prefix + "." + k
-			flattenMap(src, preHeader, path, pathIndex, prefix)
+			flattenMap(src[k].(map[string]interface{}), preHeader, path, pathIndex, prefix)
 		}
 
 	}
@@ -99,46 +99,36 @@ func Flatten(src map[string]interface{}, path []string, pathIndex int, header ma
 func main() {
 	var Raw = `
 	{
-		"a1": "value-a1",
-		"b1": "value-b1",
-		"c1": "value-c1",
-		"d1": [
+		"collection_end_time": "0",
+		"collection_id": 610,
+		"collection_start_time": "0",
+		"data": [
 		  {
-			"a2": "value-a2-01",
-			"b2": "value-b2-01",
-			"c2": [
+			"imdata": [
 			  {
-				"a3": {
-					"a4": "value-a4-01",
-					"b4": "value-b4-02",
-					"c4": "value-c4-03"
-			  	},
-			  	"b3" : [
-			  		{
-			  			"a5": "value-a5-01"
-			  		}
-			  	]
+				"bgpPeerAfEntry": {
+				  "attributes": {
+					"dn": "sys/bgp/inst/dom-default/peer-[172.16.2.51]/ent-[172.16.2.51]/af-l2vpn-evpn",
+					"peerTblVer": 6052,
+					"rn": "",
+					"status": "modified",
+					"tblVer": 6052
+				  }
+				}
 			  }
+			],
+			"subscriptionId": [
+			  "18379196448718716937"
 			]
-		  },
-		  {
-			"a2": "value-a2-03",
-			"b2": "value-b2-04",
-			"c2": []
 		  }
 		],
-		"f1": [
-		  {
-			"af2": "value-af2-01",
-			"bf2": "value-bf2-02",
-			"cf2": "value-cf2-03"
-		  },
-		  {
-			"af2": "value-af2-01",
-			"bf2": "value-bf2-02",
-			"cf2": "value-cf2-03"
-		  }
-		]
+		"data_source": "DME",
+		"encoding_path": "EVENT-LIST",
+		"msg_timestamp": "1608972977054",
+		"node_id_str": "mpod-ac-1",
+		"sensor_group_id": [],
+		"subscription_id": "1000",
+		"version_str": "1.0.0"
 	  }
 `
 
@@ -148,7 +138,7 @@ func main() {
 		panic(err)
 	}
 
-	path := []string{"d1", "c2"}
+	path := []string{"data", "imdata"}
 
 	var pathIndex int
 
