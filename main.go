@@ -21,7 +21,6 @@ func PrettyPrint(src map[string]interface{}) {
 func flattenMap(src map[string]interface{}, preHeader map[string]interface{}, path []string, pathIndex int, prefix string) map[string]interface{} {
 
 	for k, v := range src {
-		fmt.Printf("path: %v, prefix in flatten: %v\n", strings.Join(path[:pathIndex], "."), prefix)
 
 		if reflect.ValueOf(v).Type().Kind() != reflect.Map && reflect.ValueOf(v).Type().Kind() != reflect.Slice {
 			preHeader[strings.Join(path[:pathIndex], ".")+"."+prefix+"."+k] = v
@@ -32,7 +31,6 @@ func flattenMap(src map[string]interface{}, preHeader map[string]interface{}, pa
 		}
 
 	}
-	fmt.Printf("Preheader: %v\n", preHeader)
 	return preHeader
 }
 
@@ -63,7 +61,6 @@ func combineHeaders(src map[string]interface{}, pathIndex int, path []string) (m
 				preHeader[k] = v
 			}
 			prefix := v
-			fmt.Printf("prefix before flatten: %v\n", prefix)
 			header = flattenMap(reflect.ValueOf(src[v]).Interface().(map[string]interface{}), preHeader, path, pathIndex, prefix)
 		}
 
