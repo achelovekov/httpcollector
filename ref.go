@@ -104,14 +104,8 @@ func main() {
 		"c1": "value-c1",
 		"d1": [
 		  {
-			"a2": {
-				"a5": "value-a5",
-				"b5": "value-b5"
-			  },
-			"b2": {
-				"a6": "value-a6",
-				"b6": "value-b6"
-			  },
+			"a2": "value-a2-01",
+			"b2": "value-b2-01",
 			"c2": [
 			  {
 				"a3": "value-a3-01",
