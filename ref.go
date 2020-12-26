@@ -108,14 +108,16 @@ func main() {
 			"b2": "value-b2-01",
 			"c2": [
 			  {
-				"a3": "value-a3-01",
-				"b3": "value-b3-02",
-				"c3": "value-c3-03"
-			  },
-			  {
-				"a3": "value-a3-04",
-				"b3": "value-b3-05",
-				"c3": "value-c3-06"
+				"a3": {
+					"a4": "value-a4-01",
+					"b4": "value-b4-02",
+					"c4": "value-c4-03"
+			  	},
+			  	"b3" : [
+			  		{
+			  			"a5": "value-a5-01"
+			  		}
+			  	]
 			  }
 			]
 		  },

@@ -23,7 +23,7 @@ func flattenMap(src map[string]interface{}, preHeader map[string]interface{}, pa
 	for k, v := range src {
 		fmt.Printf("path: %v, prefix in flatten: %v\n", strings.Join(path[:pathIndex], "."), prefix)
 
-		if reflect.ValueOf(v).Type().Kind() != reflect.Map {
+		if reflect.ValueOf(v).Type().Kind() != reflect.Map && reflect.ValueOf(v).Type().Kind() != reflect.Slice {
 			preHeader[strings.Join(path[:pathIndex], ".")+"."+prefix+"."+k] = v
 			fmt.Println(preHeader)
 		} else if reflect.ValueOf(v).Type().Kind() == reflect.Map {
