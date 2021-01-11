@@ -1,12 +1,53 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
 	"reflect"
 	"strings"
+
+	"github.com/elastic/go-elasticsearch"
+	es "github.com/elastic/go-elasticsearch"
+	esapi "github.com/elastic/go-elasticsearch/esapi"
 )
+
+func esConnect(ipaddr string, port string) (*es.Client, error) {
+
+	var fulladdress string = "http://" + ipaddr + ":" + port
+
+	cfg := elasticsearch.Config{
+		Addresses: []string{
+			fulladdress,
+		},
+	}
+
+	es, _ := elasticsearch.NewClient(cfg)
+
+	return es, nil
+}
+
+func esPush(esClient *es.Client, indexName string, body map[string]interface{}) {
+	empJSON, err := json.MarshalIndent(body, "", "  ")
+	if err != nil {
+		log.Fatalf(err.Error())
+	}
+
+	req := esapi.IndexRequest{
+		Index: indexName,                          // Index name
+		Body:  strings.NewReader(string(empJSON)), // Document body
+	}
+
+	res, err := req.Do(context.Background(), esClient)
+
+	if err != nil {
+		log.Fatalf("Error getting response: %s", err)
+	}
+	defer res.Body.Close()
+
+	log.Println(res)
+}
 
 func PrettyPrint(src map[string]interface{}) {
 	empJSON, err := json.MarshalIndent(src, "", "  ")
@@ -19,18 +60,18 @@ func PrettyPrint(src map[string]interface{}) {
 func flattenMap(src map[string]interface{}, preHeader map[string]interface{}, path []string, pathIndex int, prefix string) map[string]interface{} {
 
 	for k, v := range src {
-		fmt.Printf("path: %v, prefix in flatten: %v\n", strings.Join(path[:pathIndex], "."), prefix)
+		//fmt.Printf("path: %v, prefix in flatten: %v\n", strings.Join(path[:pathIndex], "."), prefix)
 
 		if reflect.ValueOf(v).Type().Kind() != reflect.Map {
 			preHeader[strings.Join(path[:pathIndex], ".")+"."+prefix+"."+k] = v
-			fmt.Println(preHeader)
+			//fmt.Println(preHeader)
 		} else if reflect.ValueOf(v).Type().Kind() == reflect.Map {
 			prefix = prefix + "." + k
 			flattenMap(src[k].(map[string]interface{}), preHeader, path, pathIndex, prefix)
 		}
 
 	}
-	fmt.Printf("Preheader: %v\n", preHeader)
+	//fmt.Printf("Preheader: %v\n", preHeader)
 	return preHeader
 }
 
@@ -61,7 +102,7 @@ func combineHeaders(src map[string]interface{}, pathIndex int, path []string) (m
 				preHeader[k] = v
 			}
 			prefix := v
-			fmt.Printf("prefix before flatten: %v\n", prefix)
+			//fmt.Printf("prefix before flatten: %v\n", prefix)
 			header = flattenMap(reflect.ValueOf(src[v]).Interface().(map[string]interface{}), preHeader, path, pathIndex, prefix)
 		}
 
@@ -70,7 +111,7 @@ func combineHeaders(src map[string]interface{}, pathIndex int, path []string) (m
 	return header, pathIndex
 }
 
-func Flatten(src map[string]interface{}, path []string, pathIndex int, header map[string]interface{}) {
+func Flatten(esClient *es.Client, src map[string]interface{}, path []string, pathIndex int, header map[string]interface{}) {
 
 	addHeader, pathIndex := combineHeaders(src, pathIndex, path)
 	newHeader := make(map[string]interface{})
@@ -84,19 +125,27 @@ func Flatten(src map[string]interface{}, path []string, pathIndex int, header ma
 	}
 
 	if pathIndex == len(path) {
-		PrettyPrint(newHeader)
+		//PrettyPrint(newHeader)
+		esPush(esClient, "golang-index", newHeader)
 	} else if reflect.ValueOf(src[path[pathIndex]]).Len() == 0 {
 		newHeader[path[pathIndex]] = make([]interface{}, 0)
-		PrettyPrint(newHeader)
+		//PrettyPrint(newHeader)
+		esPush(esClient, "golang-index", newHeader)
 	} else {
 		for i := 0; i < reflect.ValueOf(src[path[pathIndex]]).Len(); i++ {
 			v := reflect.ValueOf(src[path[pathIndex]]).Index(i).Interface()
-			Flatten(v.(map[string]interface{}), path, pathIndex+1, newHeader)
+			Flatten(esClient, v.(map[string]interface{}), path, pathIndex+1, newHeader)
 		}
 	}
 }
 
 func main() {
+	es, error := esConnect("10.62.186.54", "9200")
+
+	if error != nil {
+		log.Fatalf("error: %s", error)
+	}
+
 	var Raw = `
 	{
 		"collection_end_time": "0",
@@ -144,6 +193,6 @@ func main() {
 
 	header := make(map[string]interface{})
 
-	Flatten(jsonMap, path, pathIndex, header)
+	Flatten(es, jsonMap, path, pathIndex, header)
 
 }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -8,7 +9,47 @@ import (
 	"net/http"
 	"reflect"
 	"strings"
+
+	"github.com/elastic/go-elasticsearch"
+	es "github.com/elastic/go-elasticsearch"
+	esapi "github.com/elastic/go-elasticsearch/esapi"
 )
+
+func esConnect(ipaddr string, port string) (*es.Client, error) {
+
+	var fulladdress string = "http://" + ipaddr + ":" + port
+
+	cfg := elasticsearch.Config{
+		Addresses: []string{
+			fulladdress,
+		},
+	}
+
+	es, _ := elasticsearch.NewClient(cfg)
+
+	return es, nil
+}
+
+func esPush(esClient *es.Client, indexName string, body map[string]interface{}) {
+	empJSON, err := json.MarshalIndent(body, "", "  ")
+	if err != nil {
+		log.Fatalf(err.Error())
+	}
+
+	req := esapi.IndexRequest{
+		Index: indexName,                          // Index name
+		Body:  strings.NewReader(string(empJSON)), // Document body
+	}
+
+	res, err := req.Do(context.Background(), esClient)
+
+	if err != nil {
+		log.Fatalf("Error getting response: %s", err)
+	}
+	defer res.Body.Close()
+
+	log.Println(res)
+}
 
 func PrettyPrint(src map[string]interface{}) {
 	empJSON, err := json.MarshalIndent(src, "", "  ")
@@ -68,7 +109,7 @@ func combineHeaders(src map[string]interface{}, pathIndex int, path []string) (m
 	return header, pathIndex
 }
 
-func Flatten(src map[string]interface{}, path []string, pathIndex int, header map[string]interface{}) {
+func Flatten(esClient *es.Client, src map[string]interface{}, path []string, pathIndex int, header map[string]interface{}) {
 
 	addHeader, pathIndex := combineHeaders(src, pathIndex, path)
 	newHeader := make(map[string]interface{})
@@ -82,19 +123,21 @@ func Flatten(src map[string]interface{}, path []string, pathIndex int, header ma
 	}
 
 	if pathIndex == len(path) {
-		PrettyPrint(newHeader)
+		//PrettyPrint(newHeader)
+		esPush(esClient, "golang-index", newHeader)
 	} else if reflect.ValueOf(src[path[pathIndex]]).Len() == 0 {
 		newHeader[path[pathIndex]] = make([]interface{}, 0)
-		PrettyPrint(newHeader)
+		//PrettyPrint(newHeader)
+		esPush(esClient, "golang-index", newHeader)
 	} else {
 		for i := 0; i < reflect.ValueOf(src[path[pathIndex]]).Len(); i++ {
 			v := reflect.ValueOf(src[path[pathIndex]]).Index(i).Interface()
-			Flatten(v.(map[string]interface{}), path, pathIndex+1, newHeader)
+			Flatten(esClient, v.(map[string]interface{}), path, pathIndex+1, newHeader)
 		}
 	}
 }
 
-func worker(r *http.Request, path []string) {
+func worker(esClient *es.Client, r *http.Request, path []string) {
 	if r.Method != "POST" {
 		fmt.Println("Is not POST method")
 		return
@@ -121,34 +164,46 @@ func worker(r *http.Request, path []string) {
 
 		header := make(map[string]interface{})
 
-		Flatten(src, path, pathIndex, header)
+		Flatten(esClient, src, path, pathIndex, header)
 	}
 }
 
-func ribhandler(w http.ResponseWriter, r *http.Request) {
+type postReqHandler struct {
+	esClient *es.Client
+}
+
+func (prh *postReqHandler) ribhandler(w http.ResponseWriter, r *http.Request) {
 	path := []string{"data", "nextHop"}
-	worker(r, path)
+	worker(prh.esClient, r, path)
 }
 
-func macAllHandler(w http.ResponseWriter, r *http.Request) {
+func (prh *postReqHandler) macAllHandler(w http.ResponseWriter, r *http.Request) {
 	path := []string{"data", "list"}
-	worker(r, path)
+	worker(prh.esClient, r, path)
 }
 
-func adjacencyHandler(w http.ResponseWriter, r *http.Request) {
+func (prh *postReqHandler) adjacencyHandler(w http.ResponseWriter, r *http.Request) {
 	path := []string{"data"}
-	worker(r, path)
+	worker(prh.esClient, r, path)
 }
 
-func vxlanHandler(w http.ResponseWriter, r *http.Request) {
+func (prh *postReqHandler) vxlanHandler(w http.ResponseWriter, r *http.Request) {
 	path := []string{"data", "imdata"}
-	worker(r, path)
+	worker(prh.esClient, r, path)
 }
 
 func main() {
-	http.HandleFunc("/network/rib", ribhandler)
-	http.HandleFunc("/network/mac-all", macAllHandler)
-	http.HandleFunc("/network/adjacency", adjacencyHandler)
-	http.HandleFunc("/network/EVENT-LIST", vxlanHandler)
+	esClient, error := esConnect("10.62.186.54", "9200")
+
+	if error != nil {
+		log.Fatalf("error: %s", error)
+	}
+
+	postReqHandler := &postReqHandler{esClient: esClient}
+
+	http.HandleFunc("/network/rib", postReqHandler.ribhandler)
+	http.HandleFunc("/network/mac-all", postReqHandler.macAllHandler)
+	http.HandleFunc("/network/adjacency", postReqHandler.adjacencyHandler)
+	http.HandleFunc("/network/EVENT-LIST", postReqHandler.vxlanHandler)
 	http.ListenAndServe(":10000", nil)
 }
