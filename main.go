@@ -217,8 +217,8 @@ func main() {
 	http.HandleFunc("/network/mac-all", postReqHandler.macAllHandler)
 	http.HandleFunc("/network/adjacency", postReqHandler.adjacencyHandler)
 	http.HandleFunc("/network/EVENT-LIST", postReqHandler.vxlanHandler)
-	http.HandleFunc("/network/vxlan%3Asys%2Feps", postReqHandler.vxlanSysEpsHandler)
-	http.HandleFunc("/network/vxlan%3Asys%2Fbd", postReqHandler.vxlanSysBdHandler)
+	http.HandleFunc("/network/vxlan:sys/eps", postReqHandler.vxlanSysEpsHandler)
+	http.HandleFunc("/network/vxlan:sys/bd", postReqHandler.vxlanSysBdHandler)
 
 	http.ListenAndServe(":10000", nil)
 }
