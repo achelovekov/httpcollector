@@ -191,14 +191,30 @@ func (prh *postReqHandler) adjacencyHandler(w http.ResponseWriter, r *http.Reque
 	worker(prh.esClient, r, path)
 }
 
-func (prh *postReqHandler) vxlanHandler(w http.ResponseWriter, r *http.Request) {
+func (prh *postReqHandler) eventHandler(w http.ResponseWriter, r *http.Request) {
 	path := []string{"data", "imdata"}
 	worker(prh.esClient, r, path)
 }
 
 func (prh *postReqHandler) vxlanSysEpsHandler(w http.ResponseWriter, r *http.Request) {
-	path := []string{"children", "children", "children"}
-	worker(prh.esClient, r, path)
+	if r.Method != "POST" {
+		fmt.Println("Is not POST method")
+		return
+	} else {
+		data, _ := ioutil.ReadAll(r.Body)
+
+		src := make(map[string]interface{})
+		err := json.Unmarshal(data, &src)
+		if err != nil {
+			panic(err)
+		}
+
+		srcJSON, err := json.MarshalIndent(src, "", "  ")
+		if err != nil {
+			log.Fatalf(err.Error())
+		}
+		fmt.Printf("MarshalIndent function output %s\n", string(srcJSON))
+	}
 }
 
 func (prh *postReqHandler) vxlanSysBdHandler(w http.ResponseWriter, r *http.Request) {
@@ -234,7 +250,7 @@ func main() {
 	http.HandleFunc("/network/rib", postReqHandler.ribhandler)
 	http.HandleFunc("/network/mac-all", postReqHandler.macAllHandler)
 	http.HandleFunc("/network/adjacency", postReqHandler.adjacencyHandler)
-	http.HandleFunc("/network/EVENT-LIST", postReqHandler.vxlanHandler)
+	http.HandleFunc("/network/EVENT-LIST", postReqHandler.eventHandler)
 	http.HandleFunc("/network/vxlan:sys/eps", postReqHandler.vxlanSysEpsHandler)
 	http.HandleFunc("/network/vxlan:sys/bd", postReqHandler.vxlanSysBdHandler)
 
