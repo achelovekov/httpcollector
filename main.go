@@ -59,6 +59,7 @@ func PrettyPrint(src map[string]interface{}) {
 	fmt.Printf("Pretty processed output %s\n", string(empJSON))
 }
 
+//flattens the field if that field is map
 func flattenMap(src map[string]interface{}, preHeader map[string]interface{}, path []string, pathIndex int, prefix string) map[string]interface{} {
 
 	for k, v := range src {
@@ -74,6 +75,7 @@ func flattenMap(src map[string]interface{}, preHeader map[string]interface{}, pa
 	return preHeader
 }
 
+//combines headers from previous recursive calls
 func combineHeaders(src map[string]interface{}, pathIndex int, path []string) (map[string]interface{}, int) {
 
 	header := make(map[string]interface{})
@@ -109,6 +111,7 @@ func combineHeaders(src map[string]interface{}, pathIndex int, path []string) (m
 	return header, pathIndex
 }
 
+//general flatten func
 func Flatten(esClient *es.Client, src map[string]interface{}, path []string, pathIndex int, header map[string]interface{}) {
 
 	addHeader, pathIndex := combineHeaders(src, pathIndex, path)
@@ -137,6 +140,7 @@ func Flatten(esClient *es.Client, src map[string]interface{}, path []string, pat
 	}
 }
 
+//general post call serving func
 func worker(esClient *es.Client, r *http.Request, path []string) {
 	if r.Method != "POST" {
 		fmt.Println("Is not POST method")
