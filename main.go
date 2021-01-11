@@ -94,6 +94,38 @@ func Flatten(src map[string]interface{}, path []string, pathIndex int, header ma
 	}
 }
 
+func worker(r *http.Request, path []string) {
+	if r.Method != "POST" {
+		fmt.Println("Is not POST method")
+		return
+	} else {
+		data, _ := ioutil.ReadAll(r.Body)
+
+		src := make(map[string]interface{})
+		err := json.Unmarshal(data, &src)
+		if err != nil {
+			panic(err)
+		}
+
+		srcJSON, err := json.MarshalIndent(src, "", "  ")
+		if err != nil {
+			log.Fatalf(err.Error())
+		}
+		fmt.Printf("MarshalIndent function output %s\n", string(srcJSON))
+
+		if err != nil {
+			log.Fatalf(err.Error())
+		}
+
+		var pathIndex int
+
+		header := make(map[string]interface{})
+
+		Flatten(src, path, pathIndex, header)
+	}
+}
+
+/*
 func ribhandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
 		fmt.Println("Is not POST method")
@@ -125,6 +157,12 @@ func ribhandler(w http.ResponseWriter, r *http.Request) {
 
 		Flatten(src, path, pathIndex, header)
 	}
+}
+*/
+
+func ribhandler(w http.ResponseWriter, r *http.Request) {
+	path := []string{"data", "nextHop"}
+	worker(r, path)
 }
 
 func macAllHandler(w http.ResponseWriter, r *http.Request) {
