@@ -196,6 +196,48 @@ func (prh *postReqHandler) vxlanHandler(w http.ResponseWriter, r *http.Request) 
 	worker(prh.esClient, r, path)
 }
 
+func (prh *postReqHandler) vxlanSysEpsHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		fmt.Println("Is not POST method")
+		return
+	} else {
+		data, _ := ioutil.ReadAll(r.Body)
+
+		src := make(map[string]interface{})
+		err := json.Unmarshal(data, &src)
+		if err != nil {
+			panic(err)
+		}
+
+		srcJSON, err := json.MarshalIndent(src, "", "  ")
+		if err != nil {
+			log.Fatalf(err.Error())
+		}
+		fmt.Printf("MarshalIndent function output %s\n", string(srcJSON))
+	}
+}
+
+func (prh *postReqHandler) vxlanSysBdHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		fmt.Println("Is not POST method")
+		return
+	} else {
+		data, _ := ioutil.ReadAll(r.Body)
+
+		src := make(map[string]interface{})
+		err := json.Unmarshal(data, &src)
+		if err != nil {
+			panic(err)
+		}
+
+		srcJSON, err := json.MarshalIndent(src, "", "  ")
+		if err != nil {
+			log.Fatalf(err.Error())
+		}
+		fmt.Printf("MarshalIndent function output %s\n", string(srcJSON))
+	}
+}
+
 func main() {
 	esClient, error := esConnect("10.62.186.54", "9200")
 
@@ -209,5 +251,8 @@ func main() {
 	http.HandleFunc("/network/mac-all", postReqHandler.macAllHandler)
 	http.HandleFunc("/network/adjacency", postReqHandler.adjacencyHandler)
 	http.HandleFunc("/network/EVENT-LIST", postReqHandler.vxlanHandler)
+	http.HandleFunc("/network/vxlan%3Asys%2Feps", postReqHandler.vxlanSysEpsHandler)
+	http.HandleFunc("/network/vxlan%3Asys%2Fbd", postReqHandler.vxlanSysBdHandler)
+
 	http.ListenAndServe(":10000", nil)
 }
