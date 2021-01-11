@@ -125,133 +125,24 @@ func worker(r *http.Request, path []string) {
 	}
 }
 
-/*
-func ribhandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "POST" {
-		fmt.Println("Is not POST method")
-		return
-	} else {
-		data, _ := ioutil.ReadAll(r.Body)
-
-		src := make(map[string]interface{})
-		err := json.Unmarshal(data, &src)
-		if err != nil {
-			panic(err)
-		}
-
-		srcJSON, err := json.MarshalIndent(src, "", "  ")
-		if err != nil {
-			log.Fatalf(err.Error())
-		}
-		fmt.Printf("MarshalIndent function output %s\n", string(srcJSON))
-
-		if err != nil {
-			log.Fatalf(err.Error())
-		}
-
-		var pathIndex int
-
-		header := make(map[string]interface{})
-
-		path := []string{"data", "nextHop"}
-
-		Flatten(src, path, pathIndex, header)
-	}
-}
-*/
-
 func ribhandler(w http.ResponseWriter, r *http.Request) {
 	path := []string{"data", "nextHop"}
 	worker(r, path)
 }
 
 func macAllHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "POST" {
-		fmt.Println("Is not POST method")
-		return
-	} else {
-		data, _ := ioutil.ReadAll(r.Body)
-
-		src := make(map[string]interface{})
-		err := json.Unmarshal(data, &src)
-		if err != nil {
-			panic(err)
-		}
-
-		srcJSON, err := json.MarshalIndent(src, "", "  ")
-		if err != nil {
-			log.Fatalf(err.Error())
-		}
-		fmt.Printf("MarshalIndent function output %s\n", string(srcJSON))
-
-		var pathIndex int
-
-		header := make(map[string]interface{})
-
-		path := []string{"data", "list"}
-
-		Flatten(src, path, pathIndex, header)
-	}
+	path := []string{"data", "list"}
+	worker(r, path)
 }
 
 func adjacencyHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "POST" {
-		fmt.Println("Is not POST method")
-		return
-	} else {
-		data, _ := ioutil.ReadAll(r.Body)
-
-		src := make(map[string]interface{})
-		err := json.Unmarshal(data, &src)
-		if err != nil {
-			panic(err)
-		}
-
-		srcJSON, err := json.MarshalIndent(src, "", "  ")
-		if err != nil {
-			log.Fatalf(err.Error())
-		}
-		fmt.Printf("MarshalIndent function output %s\n", string(srcJSON))
-
-		var pathIndex int
-
-		header := make(map[string]interface{})
-
-		path := []string{"data"}
-
-		Flatten(src, path, pathIndex, header)
-
-	}
+	path := []string{"data"}
+	worker(r, path)
 }
 
 func vxlanHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "POST" {
-		fmt.Println("Is not POST method")
-		return
-	} else {
-		data, _ := ioutil.ReadAll(r.Body)
-
-		src := make(map[string]interface{})
-		err := json.Unmarshal(data, &src)
-		if err != nil {
-			panic(err)
-		}
-
-		srcJSON, err := json.MarshalIndent(src, "", "  ")
-		if err != nil {
-			log.Fatalf(err.Error())
-		}
-		fmt.Printf("MarshalIndent function output %s\n", string(srcJSON))
-
-		var pathIndex int
-
-		header := make(map[string]interface{})
-
-		path := []string{"data", "imdata"}
-
-		Flatten(src, path, pathIndex, header)
-
-	}
+	path := []string{"data", "imdata"}
+	worker(r, path)
 }
 
 func main() {
