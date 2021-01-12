@@ -15,7 +15,7 @@ import (
 	esapi "github.com/elastic/go-elasticsearch/esapi"
 )
 
-func flatten(src map[string]interface{}, path []string, pathIndex int, header map[string]interface{}) {
+func flatten(esClient *es.Client, src map[string]interface{}, path []string, pathIndex int, header map[string]interface{}) {
 	newHeader := make(map[string]interface{})
 	for k, v := range header {
 		newHeader[k] = v
@@ -31,11 +31,11 @@ func flatten(src map[string]interface{}, path []string, pathIndex int, header ma
 		for i := 0; i < reflect.ValueOf(v).Len(); i++ {
 			v := reflect.ValueOf(v).Index(i).Interface().(map[string]interface{})
 			if _, ok := v[path[pathIndex+1]]; ok {
-				flatten(v, path, pathIndex+1, newHeader)
+				flatten(esClient, v, path, pathIndex+1, newHeader)
 			}
 		}
 	} else {
-		fmt.Println(newHeader)
+		PrettyPrint(newHeader)
 	}
 }
 
@@ -83,29 +83,7 @@ func PrettyPrint(src map[string]interface{}) {
 	fmt.Printf("Pretty processed output %s\n", string(empJSON))
 }
 
-func worker(src map[string]interface{}, path []string) {
-
-	var pathIndex int
-
-	newHeader := make(map[string]interface{})
-
-	for k, v := range src {
-		if k != "data" {
-			newHeader[k] = v
-		}
-	}
-
-	flatten(src["data"].(map[string]interface{}), path, pathIndex, newHeader)
-
-}
-
-type postReqHandler struct {
-	esClient *es.Client
-}
-
-func (prh *postReqHandler) vxlanSysEpsHandler(w http.ResponseWriter, r *http.Request) {
-	//var path = []string{"nvoEps", "nvoEp", "nvoNws", "nvoNw"}
-	//worker(prh.esClient, path)
+func worker(esClient *es.Client, r *http.Request, path []string) {
 	if r.Method != "POST" {
 		fmt.Println("Is not POST method")
 		return
@@ -123,7 +101,32 @@ func (prh *postReqHandler) vxlanSysEpsHandler(w http.ResponseWriter, r *http.Req
 			log.Fatalf(err.Error())
 		}
 		fmt.Printf("MarshalIndent function output %s\n", string(srcJSON))
+
+		if err != nil {
+			log.Fatalf(err.Error())
+		}
+
+		var pathIndex int
+
+		newHeader := make(map[string]interface{})
+
+		for k, v := range src {
+			if k != "data" {
+				newHeader[k] = v
+			}
+		}
+
+		flatten(esClient, src["data"].(map[string]interface{}), path, pathIndex, newHeader)
 	}
+}
+
+type postReqHandler struct {
+	esClient *es.Client
+}
+
+func (prh *postReqHandler) vxlanSysEpsHandler(w http.ResponseWriter, r *http.Request) {
+	var path = []string{"nvoEps", "nvoEp", "nvoNws", "nvoNw"}
+	worker(prh.esClient, r, path)
 }
 
 func main() {
