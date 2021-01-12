@@ -36,6 +36,7 @@ func flatten(esClient *es.Client, src map[string]interface{}, path []string, pat
 		}
 	} else {
 		PrettyPrint(newHeader)
+		esPush(esClient, "golang-index", newHeader)
 	}
 }
 
