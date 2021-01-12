@@ -12,24 +12,23 @@ func flatten(src map[string]interface{}, path []string, pathIndex int, header ma
 		newHeader[k] = v
 	}
 
-	for k, v := range src[path[pathIndex]].(map[string]interface{}) {
-		if k == "attributes" {
-			for k, v := range v.(map[string]interface{}) {
-				newHeader[path[pathIndex]+"."+k] = v
-			}
-		} else if k == "children" && pathIndex != len(path)-1 {
-			for i := 0; i < reflect.ValueOf(v).Len(); i++ {
-				v := reflect.ValueOf(v).Index(i).Interface().(map[string]interface{})
-				if _, ok := v[path[pathIndex+1]]; ok {
-					flatten(v, path, pathIndex+1, newHeader)
-				}
-			}
+	src = src[path[pathIndex]].(map[string]interface{})
+	if v, ok := src["attributes"]; ok {
+		for k, v := range v.(map[string]interface{}) {
+			newHeader[path[pathIndex]+"."+k] = v
 		}
 	}
-
-	if pathIndex == len(path)-1 {
+	if v, ok := src["children"]; ok && pathIndex != len(path)-1 {
+		for i := 0; i < reflect.ValueOf(v).Len(); i++ {
+			v := reflect.ValueOf(v).Index(i).Interface().(map[string]interface{})
+			if _, ok := v[path[pathIndex+1]]; ok {
+				flatten(v, path, pathIndex+1, newHeader)
+			}
+		}
+	} else {
 		fmt.Println(newHeader)
 	}
+
 }
 
 func main() {
@@ -40679,7 +40678,7 @@ func main() {
 		panic(err)
 	}
 
-	var path = []string{"bgpEntity", "bgpInst", "bgpDom", "bgpPeer", "bgpPeerEntry"}
+	var path = []string{"bgpEntity", "bgpInst", "bgpDom", "bgpPeer", "bgpPeerEntry", "bgpPeerAfEntry"}
 	var pathIndex int
 	header := make(map[string]interface{})
 
