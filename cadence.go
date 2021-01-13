@@ -160,26 +160,8 @@ func (prh *postReqHandler) vxlanSysIntfHandler(w http.ResponseWriter, r *http.Re
 }
 
 func (prh *postReqHandler) vxlanSysChHandler(w http.ResponseWriter, r *http.Request) {
-	//var path = []string{"l1PhysIf", "rmonIfIn"}
-	//worker(prh.esClient, r, path)
-	if r.Method != "POST" {
-		fmt.Println("Is not POST method")
-		return
-	} else {
-		data, _ := ioutil.ReadAll(r.Body)
-
-		src := make(map[string]interface{})
-		err := json.Unmarshal(data, &src)
-		if err != nil {
-			panic(err)
-		}
-
-		srcJSON, err := json.MarshalIndent(src, "", "  ")
-		if err != nil {
-			log.Fatalf(err.Error())
-		}
-		fmt.Printf("MarshalIndent function output %s\n", string(srcJSON))
-	}
+	var path = []string{"eqptSupCSlot", "eqptSupC", "eqptDimm"}
+	worker(prh.esClient, r, path)
 }
 
 func main() {
