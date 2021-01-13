@@ -21,22 +21,24 @@ func flattenMap(esClient *es.Client, src map[string]interface{}, path []string, 
 		newHeader[k] = v
 	}
 
-	src = src[path[pathIndex]].(map[string]interface{})
-	if v, ok := src["attributes"]; ok {
-		for k, v := range v.(map[string]interface{}) {
-			newHeader[path[pathIndex]+"."+k] = v
-		}
-	}
-	if v, ok := src["children"]; ok && pathIndex != len(path)-1 {
-		for i := 0; i < reflect.ValueOf(v).Len(); i++ {
-			v := reflect.ValueOf(v).Index(i).Interface().(map[string]interface{})
-			if _, ok := v[path[pathIndex+1]]; ok {
-				flattenMap(esClient, v, path, pathIndex+1, newHeader)
+	if _, ok := src[path[pathIndex]]; ok {
+		v := reflect.ValueOf(src[path[pathIndex]]).Interface().(map[string]interface{})
+		if v, ok := v["attributes"]; ok {
+			for k, v := range v.(map[string]interface{}) {
+				newHeader[path[pathIndex]+"."+k] = v
 			}
 		}
-	} else {
-		PrettyPrint(newHeader)
-		esPush(esClient, "golang-index", newHeader)
+		if v, ok := v["children"]; ok && pathIndex != len(path)-1 {
+			for i := 0; i < reflect.ValueOf(v).Len(); i++ {
+				v := reflect.ValueOf(v).Index(i).Interface().(map[string]interface{})
+				if _, ok := v[path[pathIndex+1]]; ok {
+					flattenMap(esClient, v, path, pathIndex+1, newHeader)
+				}
+			}
+		} else {
+			PrettyPrint(newHeader)
+			esPush(esClient, "golang-index", newHeader)
+		}
 	}
 }
 
