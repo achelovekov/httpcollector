@@ -46,6 +46,11 @@ func flattenList(esClient *es.Client, src map[string]interface{}, path []string,
 		newHeader[k] = v
 	}
 
+	for i := 0; i < reflect.ValueOf(src["data"]).Len(); i++ {
+		v := reflect.ValueOf(src["data"]).Index(i).Interface()
+		flattenMap(esClient, v.(map[string]interface{}), path, pathIndex, newHeader)
+	}
+
 }
 
 func esConnect(ipaddr string, port string) (*es.Client, error) {
@@ -177,8 +182,8 @@ func main() {
 
 	postReqHandler := &postReqHandler{esClient: esClient}
 	//http.HandleFunc("/network/vxlan:sys/eps", postReqHandler.vxlanSysEpsHandler)
-	//http.HandleFunc("/network/vxlan:sys/bd", postReqHandler.vxlanSysBdHandler)
-	http.HandleFunc("/network/interface:sys/intf", postReqHandler.vxlanSysIntfHandler)
+	http.HandleFunc("/network/vxlan:sys/bd", postReqHandler.vxlanSysBdHandler)
+	//http.HandleFunc("/network/interface:sys/intf", postReqHandler.vxlanSysIntfHandler)
 
 	http.ListenAndServe(":11000", nil)
 
