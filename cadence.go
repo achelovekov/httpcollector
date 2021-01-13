@@ -160,7 +160,7 @@ func (prh *postReqHandler) vxlanSysIntfHandler(w http.ResponseWriter, r *http.Re
 }
 
 func (prh *postReqHandler) vxlanSysChHandler(w http.ResponseWriter, r *http.Request) {
-	var path = []string{"eqptSupCSlot", "eqptSupC", "eqptDimm"}
+	var path = []string{"eqptSupCSlot", "eqptSupC", "eqptCPU"}
 	worker(prh.esClient, r, path)
 }
 
