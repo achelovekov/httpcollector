@@ -153,24 +153,8 @@ func (prh *postReqHandler) vxlanSysBdHandler(w http.ResponseWriter, r *http.Requ
 }
 
 func (prh *postReqHandler) vxlanSysIntfHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "POST" {
-		fmt.Println("Is not POST method")
-		return
-	} else {
-		data, _ := ioutil.ReadAll(r.Body)
-
-		src := make(map[string]interface{})
-		err := json.Unmarshal(data, &src)
-		if err != nil {
-			panic(err)
-		}
-
-		srcJSON, err := json.MarshalIndent(src, "", "  ")
-		if err != nil {
-			log.Fatalf(err.Error())
-		}
-		fmt.Printf("MarshalIndent function output %s\n", string(srcJSON))
-	}
+	var path = []string{"l1PhysIf", "rmonIfIn"}
+	worker(prh.esClient, r, path)
 }
 
 func main() {
@@ -182,8 +166,8 @@ func main() {
 
 	postReqHandler := &postReqHandler{esClient: esClient}
 	//http.HandleFunc("/network/vxlan:sys/eps", postReqHandler.vxlanSysEpsHandler)
-	http.HandleFunc("/network/vxlan:sys/bd", postReqHandler.vxlanSysBdHandler)
-	//http.HandleFunc("/network/interface:sys/intf", postReqHandler.vxlanSysIntfHandler)
+	//http.HandleFunc("/network/vxlan:sys/bd", postReqHandler.vxlanSysBdHandler)
+	http.HandleFunc("/network/interface:sys/intf", postReqHandler.vxlanSysIntfHandler)
 
 	http.ListenAndServe(":11000", nil)
 
