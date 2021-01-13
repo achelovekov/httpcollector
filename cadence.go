@@ -111,13 +111,13 @@ func worker(esClient *es.Client, r *http.Request, path []string) {
 		if err != nil {
 			panic(err)
 		}
-
-		srcJSON, err := json.MarshalIndent(src, "", "  ")
-		if err != nil {
-			log.Fatalf(err.Error())
-		}
-		//fmt.Printf("MarshalIndent function output %s\n", string(srcJSON))
-
+		/*
+			srcJSON, err := json.MarshalIndent(src, "", "  ")
+			if err != nil {
+				log.Fatalf(err.Error())
+			}
+			fmt.Printf("MarshalIndent function output %s\n", string(srcJSON))
+		*/
 		if err != nil {
 			log.Fatalf(err.Error())
 		}
