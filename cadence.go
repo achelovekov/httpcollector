@@ -143,7 +143,7 @@ func main() {
 	}
 
 	postReqHandler := &postReqHandler{esClient: esClient}
-	http.HandleFunc("/network/vxlan:sys/eps", postReqHandler.vxlanSysEpsHandler)
+	//http.HandleFunc("/network/vxlan:sys/eps", postReqHandler.vxlanSysEpsHandler)
 	http.HandleFunc("/network/vxlan:sys/bd", postReqHandler.vxlanSysBdHandler)
 
 	http.ListenAndServe(":11000", nil)
