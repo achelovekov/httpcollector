@@ -15,7 +15,7 @@ import (
 	esapi "github.com/elastic/go-elasticsearch/esapi"
 )
 
-func flatten(esClient *es.Client, src map[string]interface{}, path []string, pathIndex int, header map[string]interface{}) {
+func flattenMap(esClient *es.Client, src map[string]interface{}, path []string, pathIndex int, header map[string]interface{}) {
 	newHeader := make(map[string]interface{})
 	for k, v := range header {
 		newHeader[k] = v
@@ -31,13 +31,21 @@ func flatten(esClient *es.Client, src map[string]interface{}, path []string, pat
 		for i := 0; i < reflect.ValueOf(v).Len(); i++ {
 			v := reflect.ValueOf(v).Index(i).Interface().(map[string]interface{})
 			if _, ok := v[path[pathIndex+1]]; ok {
-				flatten(esClient, v, path, pathIndex+1, newHeader)
+				flattenMap(esClient, v, path, pathIndex+1, newHeader)
 			}
 		}
 	} else {
 		PrettyPrint(newHeader)
 		esPush(esClient, "golang-index", newHeader)
 	}
+}
+
+func flattenList(esClient *es.Client, src map[string]interface{}, path []string, pathIndex int, header map[string]interface{}) {
+	newHeader := make(map[string]interface{})
+	for k, v := range header {
+		newHeader[k] = v
+	}
+
 }
 
 func esConnect(ipaddr string, port string) (*es.Client, error) {
@@ -117,7 +125,11 @@ func worker(esClient *es.Client, r *http.Request, path []string) {
 			}
 		}
 
-		flatten(esClient, src["data"].(map[string]interface{}), path, pathIndex, newHeader)
+		if reflect.ValueOf(src["data"]).Type().Kind() == reflect.Map {
+			flattenMap(esClient, src["data"].(map[string]interface{}), path, pathIndex, newHeader)
+		} else {
+			flattenList(esClient, src, path, pathIndex, newHeader)
+		}
 	}
 }
 
@@ -135,6 +147,27 @@ func (prh *postReqHandler) vxlanSysBdHandler(w http.ResponseWriter, r *http.Requ
 	worker(prh.esClient, r, path)
 }
 
+func (prh *postReqHandler) vxlanSysIntfHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		fmt.Println("Is not POST method")
+		return
+	} else {
+		data, _ := ioutil.ReadAll(r.Body)
+
+		src := make(map[string]interface{})
+		err := json.Unmarshal(data, &src)
+		if err != nil {
+			panic(err)
+		}
+
+		srcJSON, err := json.MarshalIndent(src, "", "  ")
+		if err != nil {
+			log.Fatalf(err.Error())
+		}
+		fmt.Printf("MarshalIndent function output %s\n", string(srcJSON))
+	}
+}
+
 func main() {
 	esClient, error := esConnect("10.62.186.54", "9200")
 
@@ -144,7 +177,8 @@ func main() {
 
 	postReqHandler := &postReqHandler{esClient: esClient}
 	//http.HandleFunc("/network/vxlan:sys/eps", postReqHandler.vxlanSysEpsHandler)
-	http.HandleFunc("/network/vxlan:sys/bd", postReqHandler.vxlanSysBdHandler)
+	//http.HandleFunc("/network/vxlan:sys/bd", postReqHandler.vxlanSysBdHandler)
+	http.HandleFunc("/network/interface:sys/intf", postReqHandler.vxlanSysIntfHandler)
 
 	http.ListenAndServe(":11000", nil)
 
