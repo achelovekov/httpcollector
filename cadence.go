@@ -36,7 +36,7 @@ func flattenMap(esClient *es.Client, src map[string]interface{}, path []string, 
 				}
 			}
 		} else {
-			PrettyPrint(newHeader)
+			//PrettyPrint(newHeader)
 			esPush(esClient, "golang-index", newHeader)
 		}
 	}
@@ -116,7 +116,7 @@ func worker(esClient *es.Client, r *http.Request, path []string) {
 		if err != nil {
 			log.Fatalf(err.Error())
 		}
-		fmt.Printf("MarshalIndent function output %s\n", string(srcJSON))
+		//fmt.Printf("MarshalIndent function output %s\n", string(srcJSON))
 
 		if err != nil {
 			log.Fatalf(err.Error())
