@@ -169,6 +169,30 @@ func (prh *postReqHandler) vxlanSysProcHandler(w http.ResponseWriter, r *http.Re
 	worker(prh.esClient, r, path)
 }
 
+func (prh *postReqHandler) customSysBgp(w http.ResponseWriter, r *http.Request) {
+	//var path = []string{"procEntity", "procEntry"}
+	//worker(prh.esClient, r, path)
+	if r.Method != "POST" {
+		fmt.Println("Is not POST method")
+		return
+	} else {
+		data, _ := ioutil.ReadAll(r.Body)
+
+		src := make(map[string]interface{})
+		err := json.Unmarshal(data, &src)
+		if err != nil {
+			panic(err)
+		}
+
+		srcJSON, err := json.MarshalIndent(src, "", "  ")
+		if err != nil {
+			log.Fatalf(err.Error())
+		}
+		fmt.Printf("MarshalIndent function output %s\n", string(srcJSON))
+	}
+
+}
+
 func main() {
 	esClient, error := esConnect("10.62.186.54", "9200")
 
@@ -182,6 +206,8 @@ func main() {
 	http.HandleFunc("/network/interface:sys/intf", postReqHandler.vxlanSysIntfHandler)
 	http.HandleFunc("/network/environment:sys/ch", postReqHandler.vxlanSysChHandler)
 	http.HandleFunc("/network/resources:sys/proc", postReqHandler.vxlanSysProcHandler)
+	http.HandleFunc("/network/sys/bgp", postReqHandler.customSysBgp)
+
 	http.ListenAndServe(":11000", nil)
 
 }
