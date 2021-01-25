@@ -15,7 +15,7 @@ import (
 	esapi "github.com/elastic/go-elasticsearch/esapi"
 )
 
-func enrich(src map[string]interface{}, enrichmentMap map[string]int, enrichKeys []string) {
+func enrich(src map[string]interface{}, enrichmentMap map[string]map[string]int, enrichKeys []string) {
 	/*
 		if v, ok := src; ok {
 			src[key+".code"] = keyMap[key]
