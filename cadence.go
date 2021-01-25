@@ -15,12 +15,14 @@ import (
 	esapi "github.com/elastic/go-elasticsearch/esapi"
 )
 
+/*
 func enrich(src map[string]interface{}, keyMap map[string]int, key string){
 	if v, ok := src {
 		src[key + ".code"] = keyMap[key]
 	}
 	fmt.Println(src[key + ".code"])
 }
+*/
 
 //only direct paths supported
 func flattenMap(esClient *es.Client, src map[string]interface{}, path []string, pathIndex int, header map[string]interface{}) {
@@ -45,7 +47,7 @@ func flattenMap(esClient *es.Client, src map[string]interface{}, path []string, 
 				}
 			}
 		} else {
-			//enrich() 
+			//enrich()
 			esPush(esClient, "golang-index", newHeader)
 		}
 	}
@@ -150,7 +152,7 @@ func worker(esClient *es.Client, r *http.Request, path []string) {
 }
 
 type postReqHandler struct {
-	esClient *es.Client
+	esClient      *es.Client
 	enrichmentMap map[string]map[string]int
 }
 
@@ -206,7 +208,7 @@ func (prh *postReqHandler) customSysBgp(w http.ResponseWriter, r *http.Request) 
 
 }
 
-func enrichmentMapCreate() (map[string]map[string]int){
+func enrichmentMapCreate() map[string]map[string]int {
 	var Enrichment = map[string]map[string]int{}
 
 	Enrichment["bgpPeerEntry.operSt"] = map[string]int{}
