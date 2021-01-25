@@ -139,16 +139,17 @@ func worker(esClient *es.Client, r *http.Request, path [][]string, enrichmentMap
 		if err != nil {
 			panic(err)
 		}
+		/*
+			srcJSON, err := json.MarshalIndent(src, "", "  ")
+			if err != nil {
+				log.Fatalf(err.Error())
+			}
+			fmt.Printf("MarshalIndent function output %s\n", string(srcJSON))
 
-		srcJSON, err := json.MarshalIndent(src, "", "  ")
-		if err != nil {
-			log.Fatalf(err.Error())
-		}
-		fmt.Printf("MarshalIndent function output %s\n", string(srcJSON))
-
-		if err != nil {
-			log.Fatalf(err.Error())
-		}
+			if err != nil {
+				log.Fatalf(err.Error())
+			}
+		*/
 
 		var pathIndex int
 
@@ -211,7 +212,7 @@ func (prh *postReqHandler) customSysBgp(w http.ResponseWriter, r *http.Request) 
 }
 
 func (prh *postReqHandler) customSysOspf(w http.ResponseWriter, r *http.Request) {
-	var path = [][]string{{"ospfEntity"}, {"ospfDom"}, {"ospfArea"}, {"ospfAreaStats"}}
+	var path = [][]string{{"ospfEntity"}, {"ospfInst"}, {"ospfDom"}, {"ospfArea"}, {"ospfAreaStats"}}
 	var enrichKeys = []string{}
 	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys)
 }
