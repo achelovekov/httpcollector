@@ -15,17 +15,15 @@ import (
 	esapi "github.com/elastic/go-elasticsearch/esapi"
 )
 
-/*
-func enrich(src map[string]interface{}, keyMap map[string]int, key string){
-	if v, ok := src {
-		src[key + ".code"] = keyMap[key]
+func enrich(src map[string]interface{}, enrichmentMap map[string]int, enrichKeys []string) {
+	if v, ok := src; ok {
+		src[key+".code"] = keyMap[key]
 	}
-	fmt.Println(src[key + ".code"])
+	fmt.Println(src[key+".code"])
 }
-*/
 
 //only direct paths supported
-func flattenMap(esClient *es.Client, src map[string]interface{}, path []string, pathIndex int, header map[string]interface{}) {
+func flattenMap(esClient *es.Client, src map[string]interface{}, path []string, pathIndex int, header map[string]interface{}, enrichmentMap map[string]map[string]int, enrichKeys []string) {
 	newHeader := make(map[string]interface{})
 	for k, v := range header {
 		newHeader[k] = v
@@ -47,13 +45,13 @@ func flattenMap(esClient *es.Client, src map[string]interface{}, path []string, 
 				}
 			}
 		} else {
-			//enrich()
+			//enrich(newHeader, enrichmentMap)
 			esPush(esClient, "golang-index", newHeader)
 		}
 	}
 }
 
-func flattenList(esClient *es.Client, src map[string]interface{}, path []string, pathIndex int, header map[string]interface{}) {
+func flattenList(esClient *es.Client, src map[string]interface{}, path []string, pathIndex int, header map[string]interface{}, enrichmentMap map[string]map[string]int, enrichKeys []string) {
 	newHeader := make(map[string]interface{})
 	for k, v := range header {
 		newHeader[k] = v
@@ -61,7 +59,7 @@ func flattenList(esClient *es.Client, src map[string]interface{}, path []string,
 
 	for i := 0; i < reflect.ValueOf(src["data"]).Len(); i++ {
 		v := reflect.ValueOf(src["data"]).Index(i).Interface()
-		flattenMap(esClient, v.(map[string]interface{}), path, pathIndex, newHeader)
+		flattenMap(esClient, v.(map[string]interface{}), path, pathIndex, newHeader, enrichmentMap)
 	}
 
 }
@@ -110,7 +108,7 @@ func PrettyPrint(src map[string]interface{}) {
 	fmt.Printf("Pretty processed output %s\n", string(empJSON))
 }
 
-func worker(esClient *es.Client, r *http.Request, path []string) {
+func worker(esClient *es.Client, r *http.Request, path []string, enrichmentMap map[string]map[string]int, enrichKeys []string) {
 	if r.Method != "POST" {
 		fmt.Println("Is not POST method")
 		return
@@ -144,9 +142,9 @@ func worker(esClient *es.Client, r *http.Request, path []string) {
 		}
 
 		if reflect.ValueOf(src["data"]).Type().Kind() == reflect.Map {
-			flattenMap(esClient, src["data"].(map[string]interface{}), path, pathIndex, newHeader)
+			flattenMap(esClient, src["data"].(map[string]interface{}), path, pathIndex, newHeader, enrichmentMap, enrichKeys)
 		} else {
-			flattenList(esClient, src, path, pathIndex, newHeader)
+			flattenList(esClient, src, path, pathIndex, newHeader, enrichmentMap, enrichKeys)
 		}
 	}
 }
@@ -158,33 +156,32 @@ type postReqHandler struct {
 
 func (prh *postReqHandler) vxlanSysEpsHandler(w http.ResponseWriter, r *http.Request) {
 	var path = []string{"nvoEps", "nvoEp", "nvoNws", "nvoNw"}
-	worker(prh.esClient, r, path)
+	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys)
 }
 
 func (prh *postReqHandler) vxlanSysBdHandler(w http.ResponseWriter, r *http.Request) {
 	var path = []string{"l2VlanStats"}
-	worker(prh.esClient, r, path)
+	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys)
 }
 
 func (prh *postReqHandler) vxlanSysIntfHandler(w http.ResponseWriter, r *http.Request) {
 	var path = []string{"l1PhysIf", "rmonIfIn"}
-	worker(prh.esClient, r, path)
+	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys)
 }
 
 func (prh *postReqHandler) vxlanSysChHandler(w http.ResponseWriter, r *http.Request) {
 	var path = []string{"eqptSupCSlot", "eqptSupC", "eqptCPU"}
-	worker(prh.esClient, r, path)
+	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys)
 }
 
 func (prh *postReqHandler) vxlanSysProcHandler(w http.ResponseWriter, r *http.Request) {
 	var path = []string{"procEntity", "procEntry"}
-	worker(prh.esClient, r, path)
+	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys)
 }
 
 func (prh *postReqHandler) customSysBgp(w http.ResponseWriter, r *http.Request) {
 	var path = []string{"bgpEntity", "bgpInst", "bgpDom", "bgpPeer", "bgpPeerEntry", "bgpPeerEntryStats"}
-	fmt.Println(prh.enrichmentMap)
-	worker(prh.esClient, r, path)
+	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys)
 	/*
 		if r.Method != "POST" {
 			fmt.Println("Is not POST method")
