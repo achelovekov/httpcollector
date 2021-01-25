@@ -16,13 +16,16 @@ import (
 )
 
 func enrich(src map[string]interface{}, enrichmentMap map[string]map[string]int, enrichKeys []string) {
-	/*
-		if v, ok := src; ok {
-			src[key+".code"] = keyMap[key]
+	for _, key := range enrichKeys {
+		if v, ok := src[key]; ok {
+			src[key+".code"] = enrichmentMap[key][v.(string)]
 		}
-	*/
-	fmt.Println(enrichmentMap)
-	fmt.Println(enrichKeys)
+	}
+
+	PrettyPrint(src)
+
+	//fmt.Println(enrichmentMap)
+	//fmt.Println(enrichKeys)
 }
 
 //only direct paths supported
@@ -189,7 +192,7 @@ func (prh *postReqHandler) vxlanSysProcHandler(w http.ResponseWriter, r *http.Re
 
 func (prh *postReqHandler) customSysBgp(w http.ResponseWriter, r *http.Request) {
 	var path = []string{"bgpEntity", "bgpInst", "bgpDom", "bgpPeer", "bgpPeerEntry", "bgpPeerEntryStats"}
-	var enrichKeys = []string{"bgpPeerState.statw"}
+	var enrichKeys = []string{"bgpPeerEntry.operSt"}
 	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys)
 	/*
 		if r.Method != "POST" {
