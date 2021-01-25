@@ -174,7 +174,7 @@ type postReqHandler struct {
 }
 
 func (prh *postReqHandler) vxlanSysEpsHandler(w http.ResponseWriter, r *http.Request) {
-	var path = [][]string{{"nvoEps"}, {"nvoEp"}, {"nvoPeers", "nvoNws"}, {"nvoNw"}}
+	var path = [][]string{{"nvoEps"}, {"nvoEp"}, {"nvoPeers", "nvoNws"}, {"nvoDyPeer", "nvoNw"}}
 	var enrichKeys = []string{"nvoEp.operState"}
 	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys)
 }
