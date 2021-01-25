@@ -194,7 +194,7 @@ func (prh *postReqHandler) vxlanSysProcHandler(w http.ResponseWriter, r *http.Re
 }
 */
 func (prh *postReqHandler) customSysBgp(w http.ResponseWriter, r *http.Request) {
-	var path = [][]string{{"bgpEntity"}, {"bgpInst"}, {"bgpDom"}, {"bgpPeer"}, {"bgpPeerEntry"}, {"bgpPeerAfEntry"}}
+	var path = [][]string{{"bgpEntity"}, {"bgpInst"}, {"bgpDom"}, {"bgpPeer"}, {"bgpPeerEntry"}, {"bgpPeerEntryStats", "bgpPeerAfEntry"}}
 	var enrichKeys = []string{"bgpPeerEntry.operSt"}
 	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys)
 	/*
