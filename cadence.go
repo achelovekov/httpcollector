@@ -15,6 +15,7 @@ import (
 	esapi "github.com/elastic/go-elasticsearch/esapi"
 )
 
+//only direct paths supported
 func flattenMap(esClient *es.Client, src map[string]interface{}, path []string, pathIndex int, header map[string]interface{}) {
 	newHeader := make(map[string]interface{})
 	for k, v := range header {
@@ -34,9 +35,6 @@ func flattenMap(esClient *es.Client, src map[string]interface{}, path []string, 
 				v := reflect.ValueOf(v).Index(i).Interface().(map[string]interface{})
 				if _, ok := v[path[pathIndex+1]]; ok {
 					flattenMap(esClient, v, path, pathIndex+1, newHeader)
-				} else {
-					fmt.Println("AAAAA")
-					PrettyPrint(newHeader)
 				}
 			}
 		} else {
