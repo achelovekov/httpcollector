@@ -36,10 +36,11 @@ func flattenMap(esClient *es.Client, src map[string]interface{}, path []string, 
 				}
 			}
 		} else {
-			//PrettyPrint(newHeader)
+			PrettyPrint(newHeader)
 			esPush(esClient, "golang-index", newHeader)
 		}
 	} else {
+		PrettyPrint(newHeader)
 		esPush(esClient, "golang-index", newHeader)
 	}
 }
@@ -172,26 +173,28 @@ func (prh *postReqHandler) vxlanSysProcHandler(w http.ResponseWriter, r *http.Re
 }
 
 func (prh *postReqHandler) customSysBgp(w http.ResponseWriter, r *http.Request) {
-	//var path = []string{"bgpEntity", "bgpInst", "bgpDom", "bgp"}
-	//worker(prh.esClient, r, path)
-	if r.Method != "POST" {
-		fmt.Println("Is not POST method")
-		return
-	} else {
-		data, _ := ioutil.ReadAll(r.Body)
+	var path = []string{"bgpEntity", "bgpInst", "bgpDom", "bgpPeer", "bgpPeerEntry", "bgpPeerEntryStats"}
+	worker(prh.esClient, r, path)
+	/*
+		if r.Method != "POST" {
+			fmt.Println("Is not POST method")
+			return
+		} else {
+			data, _ := ioutil.ReadAll(r.Body)
 
-		src := make(map[string]interface{})
-		err := json.Unmarshal(data, &src)
-		if err != nil {
-			panic(err)
-		}
+			src := make(map[string]interface{})
+			err := json.Unmarshal(data, &src)
+			if err != nil {
+				panic(err)
+			}
 
-		srcJSON, err := json.MarshalIndent(src, "", "  ")
-		if err != nil {
-			log.Fatalf(err.Error())
+			srcJSON, err := json.MarshalIndent(src, "", "  ")
+			if err != nil {
+				log.Fatalf(err.Error())
+			}
+			fmt.Printf("MarshalIndent function output %s\n", string(srcJSON))
 		}
-		fmt.Printf("MarshalIndent function output %s\n", string(srcJSON))
-	}
+	*/
 
 }
 
