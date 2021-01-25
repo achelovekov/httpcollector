@@ -190,8 +190,7 @@ func (prh *postReqHandler) customSysBgp(w http.ResponseWriter, r *http.Request) 
 	var path1 = []string{"bgpEntity", "bgpInst", "bgpDom", "bgpPeer", "bgpPeerEntry", "bgpPeerEntryStats"}
 	var path2 = []string{"bgpEntity", "bgpInst", "bgpDom", "bgpPeer", "bgpPeerEntry", "bgpPeerAfEntry"}
 	var enrichKeys = []string{"bgpPeerEntry.operSt"}
-	go worker(prh.esClient, r, path1, prh.enrichmentMap, enrichKeys)
-	go worker(prh.esClient, r, path2, prh.enrichmentMap, enrichKeys)
+	worker(prh.esClient, r, path2, prh.enrichmentMap, enrichKeys)
 	/*
 		if r.Method != "POST" {
 			fmt.Println("Is not POST method")
