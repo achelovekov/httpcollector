@@ -29,15 +29,11 @@ func toInt(v interface{}) interface{} {
 		vInt, err := strconv.Atoi(v.(string))
 
 		if err != nil {
-			fmt.Println(reflect.ValueOf(v).Type())
 			return v
-		} else {
-			fmt.Println(reflect.ValueOf(vInt).Type())
-			return vInt
 		}
-	} else {
-		return v
+		return vInt
 	}
+	return v
 }
 
 //only direct paths supported
