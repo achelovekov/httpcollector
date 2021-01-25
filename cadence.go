@@ -21,9 +21,6 @@ func enrich(src map[string]interface{}, enrichmentMap map[string]map[string]int,
 			src[key+"/code"] = enrichmentMap[key][v.(string)]
 		}
 	}
-
-	//fmt.Println(enrichmentMap)
-	//fmt.Println(enrichKeys)
 }
 
 //only direct paths supported
