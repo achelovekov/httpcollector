@@ -44,7 +44,6 @@ func flattenMap(esClient *es.Client, src map[string]interface{}, path [][]string
 	}
 
 	for index := range path[pathIndex] {
-		fmt.Printf("index - %v\n", index)
 		if _, ok := src[path[pathIndex][index]]; ok {
 			v := reflect.ValueOf(src[path[pathIndex][index]]).Interface().(map[string]interface{})
 			if v, ok := v["attributes"]; ok {
@@ -57,7 +56,6 @@ func flattenMap(esClient *es.Client, src map[string]interface{}, path [][]string
 				for i := 0; i < reflect.ValueOf(v).Len(); i++ {
 					v := reflect.ValueOf(v).Index(i).Interface().(map[string]interface{})
 					for index := range path[pathIndex+1] {
-						fmt.Printf("index inside - %v\n", index)
 						if _, ok := v[path[pathIndex+1][index]]; ok {
 							flattenMap(esClient, v, path, pathIndex+1, newHeader, enrichmentMap, enrichKeys)
 						}
