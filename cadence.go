@@ -25,14 +25,18 @@ func enrich(src map[string]interface{}, enrichmentMap map[string]map[string]int,
 }
 
 func toInt(v interface{}) interface{} {
-	vInt, err := strconv.Atoi(v.(string))
+	if reflect.ValueOf(v).Type().Kind() == reflect.String {
+		vInt, err := strconv.Atoi(v.(string))
 
-	if err != nil {
-		fmt.Println(reflect.ValueOf(v).Type())
-		return v
+		if err != nil {
+			fmt.Println(reflect.ValueOf(v).Type())
+			return v
+		} else {
+			fmt.Println(reflect.ValueOf(vInt).Type())
+			return vInt
+		}
 	} else {
-		fmt.Println(reflect.ValueOf(vInt).Type())
-		return vInt
+		return v
 	}
 }
 
