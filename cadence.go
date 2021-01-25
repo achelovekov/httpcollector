@@ -22,8 +22,6 @@ func enrich(src map[string]interface{}, enrichmentMap map[string]map[string]int,
 		}
 	}
 
-	PrettyPrint(src)
-
 	//fmt.Println(enrichmentMap)
 	//fmt.Println(enrichKeys)
 }
@@ -52,6 +50,7 @@ func flattenMap(esClient *es.Client, src map[string]interface{}, path []string, 
 			}
 		} else {
 			enrich(newHeader, enrichmentMap, enrichKeys)
+			PrettyPrint(newHeader)
 			esPush(esClient, "golang-index", newHeader)
 		}
 	}
