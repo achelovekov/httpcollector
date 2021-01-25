@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"reflect"
+	"strconv"
 	"strings"
 
 	"github.com/elastic/go-elasticsearch"
@@ -23,11 +24,23 @@ func enrich(src map[string]interface{}, enrichmentMap map[string]map[string]int,
 	}
 }
 
+func toInt(v interface{}) interface{} {
+	vInt, err := strconv.Atoi(v.(string))
+
+	if err != nil {
+		fmt.Println(reflect.ValueOf(v).Type())
+		return v
+	} else {
+		fmt.Println(reflect.ValueOf(vInt).Type())
+		return vInt
+	}
+}
+
 //only direct paths supported
 func flattenMap(esClient *es.Client, src map[string]interface{}, path [][]string, pathIndex int, header map[string]interface{}, enrichmentMap map[string]map[string]int, enrichKeys []string) {
 	newHeader := make(map[string]interface{})
 	for k, v := range header {
-		newHeader[k] = v
+		newHeader[k] = toInt(v)
 	}
 
 	for index := range path[pathIndex] {
@@ -36,7 +49,7 @@ func flattenMap(esClient *es.Client, src map[string]interface{}, path [][]string
 			v := reflect.ValueOf(src[path[pathIndex][index]]).Interface().(map[string]interface{})
 			if v, ok := v["attributes"]; ok {
 				for k, v := range v.(map[string]interface{}) {
-					newHeader[path[pathIndex][index]+"."+k] = v
+					newHeader[path[pathIndex][index]+"."+k] = toInt(v)
 				}
 			}
 
