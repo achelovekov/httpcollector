@@ -37,7 +37,7 @@ func flattenMap(esClient *es.Client, src map[string]interface{}, path []string, 
 		v := reflect.ValueOf(src[path[pathIndex]]).Interface().(map[string]interface{})
 		if v, ok := v["attributes"]; ok {
 			for k, v := range v.(map[string]interface{}) {
-				newHeader[path[pathIndex]+"."+k] = v
+				newHeader[path[pathIndex]+"/"+k] = v
 			}
 		}
 
