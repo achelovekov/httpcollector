@@ -173,19 +173,19 @@ type postReqHandler struct {
 	enrichmentMap map[string]map[string]int
 }
 
-/*
 func (prh *postReqHandler) vxlanSysEpsHandler(w http.ResponseWriter, r *http.Request) {
-	var path = []string{"nvoEps", "nvoEp", "nvoNws", "nvoNw"}
+	var path = [][]string{{"nvoEps"}, {"nvoEp"}, {"nvoNws"}, {"nvoNw"}}
 	var enrichKeys = []string{}
 	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys)
 }
 
 func (prh *postReqHandler) vxlanSysBdHandler(w http.ResponseWriter, r *http.Request) {
-	var path = []string{"l2VlanStats"}
+	var path = [][]string{{"l2VlanStats"}}
 	var enrichKeys = []string{}
 	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys)
 }
 
+/*
 func (prh *postReqHandler) vxlanSysIntfHandler(w http.ResponseWriter, r *http.Request) {
 	var path = []string{"l1PhysIf", "rmonIfIn"}
 	var enrichKeys = []string{}
@@ -208,27 +208,6 @@ func (prh *postReqHandler) customSysBgp(w http.ResponseWriter, r *http.Request) 
 	var path = [][]string{{"bgpEntity"}, {"bgpInst"}, {"bgpDom"}, {"bgpPeer"}, {"bgpPeerEntry"}, {"bgpPeerEntryStats", "bgpPeerAfEntry"}}
 	var enrichKeys = []string{"bgpPeerEntry.operSt"}
 	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys)
-	/*
-		if r.Method != "POST" {
-			fmt.Println("Is not POST method")
-			return
-		} else {
-			data, _ := ioutil.ReadAll(r.Body)
-
-			src := make(map[string]interface{})
-			err := json.Unmarshal(data, &src)
-			if err != nil {
-				panic(err)
-			}
-
-			srcJSON, err := json.MarshalIndent(src, "", "  ")
-			if err != nil {
-				log.Fatalf(err.Error())
-			}
-			fmt.Printf("MarshalIndent function output %s\n", string(srcJSON))
-		}
-	*/
-
 }
 
 func enrichmentMapCreate() map[string]map[string]int {
@@ -261,12 +240,12 @@ func main() {
 	var enrichmentMap map[string]map[string]int = enrichmentMapCreate()
 
 	postReqHandler := &postReqHandler{esClient: esClient, enrichmentMap: enrichmentMap}
-	//http.HandleFunc("/network/vxlan:sys/eps", postReqHandler.vxlanSysEpsHandler)
-	//http.HandleFunc("/network/vxlan:sys/bd", postReqHandler.vxlanSysBdHandler)
+	http.HandleFunc("/network/vxlan:sys/eps", postReqHandler.vxlanSysEpsHandler)
+	http.HandleFunc("/network/vxlan:sys/bd", postReqHandler.vxlanSysBdHandler)
 	//http.HandleFunc("/network/interface:sys/intf", postReqHandler.vxlanSysIntfHandler)
 	//http.HandleFunc("/network/environment:sys/ch", postReqHandler.vxlanSysChHandler)
 	//http.HandleFunc("/network/resources:sys/proc", postReqHandler.vxlanSysProcHandler)
-	http.HandleFunc("/network/sys/bgp", postReqHandler.customSysBgp)
+	//http.HandleFunc("/network/sys/bgp", postReqHandler.customSysBgp)
 
 	http.ListenAndServe(":11000", nil)
 
