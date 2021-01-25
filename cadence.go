@@ -39,6 +39,8 @@ func flattenMap(esClient *es.Client, src map[string]interface{}, path []string, 
 			//PrettyPrint(newHeader)
 			esPush(esClient, "golang-index", newHeader)
 		}
+	} else {
+		esPush(esClient, "golang-index", newHeader)
 	}
 }
 
@@ -170,7 +172,7 @@ func (prh *postReqHandler) vxlanSysProcHandler(w http.ResponseWriter, r *http.Re
 }
 
 func (prh *postReqHandler) customSysBgp(w http.ResponseWriter, r *http.Request) {
-	//var path = []string{"procEntity", "procEntry"}
+	//var path = []string{"bgpEntity", "bgpInst", "bgpDom", "bgp"}
 	//worker(prh.esClient, r, path)
 	if r.Method != "POST" {
 		fmt.Println("Is not POST method")
