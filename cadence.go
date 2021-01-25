@@ -211,29 +211,9 @@ func (prh *postReqHandler) customSysBgp(w http.ResponseWriter, r *http.Request) 
 }
 
 func (prh *postReqHandler) customSysOspf(w http.ResponseWriter, r *http.Request) {
-	//var path = [][]string{}
-	//var enrichKeys = []string{}
-	//worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys)
-
-	if r.Method != "POST" {
-		fmt.Println("Is not POST method")
-		return
-	} else {
-		data, _ := ioutil.ReadAll(r.Body)
-
-		src := make(map[string]interface{})
-		err := json.Unmarshal(data, &src)
-		if err != nil {
-			panic(err)
-		}
-
-		srcJSON, err := json.MarshalIndent(src, "", "  ")
-		if err != nil {
-			log.Fatalf(err.Error())
-		}
-		fmt.Printf("MarshalIndent function output %s\n", string(srcJSON))
-	}
-
+	var path = [][]string{{"ospfEntity"}, {"ospfDom"}, {"ospfArea"}, {"ospfAreaStats"}}
+	var enrichKeys = []string{}
+	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys)
 }
 
 func enrichmentMapCreate() map[string]map[string]int {
