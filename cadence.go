@@ -175,7 +175,7 @@ type postReqHandler struct {
 
 func (prh *postReqHandler) vxlanSysEpsHandler(w http.ResponseWriter, r *http.Request) {
 	var path = [][]string{{"nvoEps"}, {"nvoEp"}, {"nvoNws"}, {"nvoNw"}}
-	var enrichKeys = []string{}
+	var enrichKeys = []string{"nvoEp.operState"}
 	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys)
 }
 
@@ -226,6 +226,8 @@ func enrichmentMapCreate() map[string]map[string]int {
 	EnrichmentMap["bgpPeerEntry.operSt"]["closing"] = 9
 	EnrichmentMap["bgpPeerEntry.operSt"]["error"] = 10
 	EnrichmentMap["bgpPeerEntry.operSt"]["unknown"] = 11
+
+	EnrichmentMap["nvoEp.operState"]["up"] = 1
 
 	return EnrichmentMap
 }
