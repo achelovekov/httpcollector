@@ -28,12 +28,14 @@ func flattenMap(esClient *es.Client, src map[string]interface{}, path []string, 
 				newHeader[path[pathIndex]+"."+k] = v
 			}
 		}
-		fmt.Println(newHeader)
+
 		if v, ok := v["children"]; ok && pathIndex != len(path)-1 {
 			for i := 0; i < reflect.ValueOf(v).Len(); i++ {
 				v := reflect.ValueOf(v).Index(i).Interface().(map[string]interface{})
 				if _, ok := v[path[pathIndex+1]]; ok {
 					flattenMap(esClient, v, path, pathIndex+1, newHeader)
+				} else {
+					fmt.Println(newHeader)
 				}
 			}
 		} else {
