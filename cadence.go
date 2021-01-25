@@ -217,7 +217,18 @@ func enrichmentMapCreate() map[string]map[string]int {
 	var EnrichmentMap = map[string]map[string]int{}
 
 	EnrichmentMap["bgpPeerEntry.operSt"] = map[string]int{}
-	EnrichmentMap["bgpPeerEntry.operSt"]["established"] = 1
+	EnrichmentMap["bgpPeerEntry.operSt"]["unspecified"] = 0
+	EnrichmentMap["bgpPeerEntry.operSt"]["illegal"] = 1
+	EnrichmentMap["bgpPeerEntry.operSt"]["shut"] = 2
+	EnrichmentMap["bgpPeerEntry.operSt"]["idle"] = 3
+	EnrichmentMap["bgpPeerEntry.operSt"]["connect"] = 4
+	EnrichmentMap["bgpPeerEntry.operSt"]["active"] = 5
+	EnrichmentMap["bgpPeerEntry.operSt"]["open-sent"] = 6
+	EnrichmentMap["bgpPeerEntry.operSt"]["open-confirm"] = 7
+	EnrichmentMap["bgpPeerEntry.operSt"]["established"] = 8
+	EnrichmentMap["bgpPeerEntry.operSt"]["closing"] = 9
+	EnrichmentMap["bgpPeerEntry.operSt"]["error"] = 10
+	EnrichmentMap["bgpPeerEntry.operSt"]["unknown"] = 11
 
 	return EnrichmentMap
 }
