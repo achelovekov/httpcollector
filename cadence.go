@@ -24,36 +24,40 @@ func enrich(src map[string]interface{}, enrichmentMap map[string]map[string]int,
 }
 
 //only direct paths supported
-func flattenMap(esClient *es.Client, src map[string]interface{}, path []string, pathIndex int, header map[string]interface{}, enrichmentMap map[string]map[string]int, enrichKeys []string) {
+func flattenMap(esClient *es.Client, src map[string]interface{}, path [][]string, pathIndex int, header map[string]interface{}, enrichmentMap map[string]map[string]int, enrichKeys []string) {
 	newHeader := make(map[string]interface{})
 	for k, v := range header {
 		newHeader[k] = v
 	}
 
-	if _, ok := src[path[pathIndex]]; ok {
-		v := reflect.ValueOf(src[path[pathIndex]]).Interface().(map[string]interface{})
-		if v, ok := v["attributes"]; ok {
-			for k, v := range v.(map[string]interface{}) {
-				newHeader[path[pathIndex]+"."+k] = v
-			}
-		}
-
-		if v, ok := v["children"]; ok && pathIndex != len(path)-1 {
-			for i := 0; i < reflect.ValueOf(v).Len(); i++ {
-				v := reflect.ValueOf(v).Index(i).Interface().(map[string]interface{})
-				if _, ok := v[path[pathIndex+1]]; ok {
-					flattenMap(esClient, v, path, pathIndex+1, newHeader, enrichmentMap, enrichKeys)
+	for index := range path[pathIndex] {
+		if _, ok := src[path[pathIndex][index]]; ok {
+			v := reflect.ValueOf(src[path[pathIndex][index]]).Interface().(map[string]interface{})
+			if v, ok := v["attributes"]; ok {
+				for k, v := range v.(map[string]interface{}) {
+					newHeader[path[pathIndex][index]+"."+k] = v
 				}
 			}
-		} else {
-			enrich(newHeader, enrichmentMap, enrichKeys)
-			PrettyPrint(newHeader)
-			esPush(esClient, "golang-index", newHeader)
+
+			if v, ok := v["children"]; ok && pathIndex != len(path)-1 {
+				for i := 0; i < reflect.ValueOf(v).Len(); i++ {
+					v := reflect.ValueOf(v).Index(i).Interface().(map[string]interface{})
+					for index := range path[pathIndex+1][index] {
+						if _, ok := v[path[pathIndex+1][index]]; ok {
+							flattenMap(esClient, v, path, pathIndex+1, newHeader, enrichmentMap, enrichKeys)
+						}
+					}
+				}
+			} else {
+				enrich(newHeader, enrichmentMap, enrichKeys)
+				PrettyPrint(newHeader)
+				esPush(esClient, "golang-index", newHeader)
+			}
 		}
 	}
 }
 
-func flattenList(esClient *es.Client, src map[string]interface{}, path []string, pathIndex int, header map[string]interface{}, enrichmentMap map[string]map[string]int, enrichKeys []string) {
+func flattenList(esClient *es.Client, src map[string]interface{}, path [][]string, pathIndex int, header map[string]interface{}, enrichmentMap map[string]map[string]int, enrichKeys []string) {
 	newHeader := make(map[string]interface{})
 	for k, v := range header {
 		newHeader[k] = v
@@ -110,7 +114,7 @@ func PrettyPrint(src map[string]interface{}) {
 	fmt.Printf("Pretty processed output %s\n", string(empJSON))
 }
 
-func worker(esClient *es.Client, r *http.Request, path []string, enrichmentMap map[string]map[string]int, enrichKeys []string) {
+func worker(esClient *es.Client, r *http.Request, path [][]string, enrichmentMap map[string]map[string]int, enrichKeys []string) {
 	if r.Method != "POST" {
 		fmt.Println("Is not POST method")
 		return
@@ -156,6 +160,7 @@ type postReqHandler struct {
 	enrichmentMap map[string]map[string]int
 }
 
+/*
 func (prh *postReqHandler) vxlanSysEpsHandler(w http.ResponseWriter, r *http.Request) {
 	var path = []string{"nvoEps", "nvoEp", "nvoNws", "nvoNw"}
 	var enrichKeys = []string{}
@@ -185,12 +190,11 @@ func (prh *postReqHandler) vxlanSysProcHandler(w http.ResponseWriter, r *http.Re
 	var enrichKeys = []string{}
 	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys)
 }
-
+*/
 func (prh *postReqHandler) customSysBgp(w http.ResponseWriter, r *http.Request) {
-	//var path1 = []string{"bgpEntity", "bgpInst", "bgpDom", "bgpPeer", "bgpPeerEntry", "bgpPeerEntryStats"}
-	var path2 = []string{"bgpEntity", "bgpInst", "bgpDom", "bgpPeer", "bgpPeerEntry", "bgpPeerAfEntry"}
+	var path = [][]string{{"bgpEntity"}, {"bgpInst"}, {"bgpDom"}, {"bgpPeer"}, {"bgpPeerEntry"}, {"bgpPeerAfEntry"}}
 	var enrichKeys = []string{"bgpPeerEntry.operSt"}
-	worker(prh.esClient, r, path2, prh.enrichmentMap, enrichKeys)
+	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys)
 	/*
 		if r.Method != "POST" {
 			fmt.Println("Is not POST method")
@@ -244,11 +248,11 @@ func main() {
 	var enrichmentMap map[string]map[string]int = enrichmentMapCreate()
 
 	postReqHandler := &postReqHandler{esClient: esClient, enrichmentMap: enrichmentMap}
-	http.HandleFunc("/network/vxlan:sys/eps", postReqHandler.vxlanSysEpsHandler)
-	http.HandleFunc("/network/vxlan:sys/bd", postReqHandler.vxlanSysBdHandler)
-	http.HandleFunc("/network/interface:sys/intf", postReqHandler.vxlanSysIntfHandler)
-	http.HandleFunc("/network/environment:sys/ch", postReqHandler.vxlanSysChHandler)
-	http.HandleFunc("/network/resources:sys/proc", postReqHandler.vxlanSysProcHandler)
+	//http.HandleFunc("/network/vxlan:sys/eps", postReqHandler.vxlanSysEpsHandler)
+	//http.HandleFunc("/network/vxlan:sys/bd", postReqHandler.vxlanSysBdHandler)
+	//http.HandleFunc("/network/interface:sys/intf", postReqHandler.vxlanSysIntfHandler)
+	//http.HandleFunc("/network/environment:sys/ch", postReqHandler.vxlanSysChHandler)
+	//http.HandleFunc("/network/resources:sys/proc", postReqHandler.vxlanSysProcHandler)
 	http.HandleFunc("/network/sys/bgp", postReqHandler.customSysBgp)
 
 	http.ListenAndServe(":11000", nil)
