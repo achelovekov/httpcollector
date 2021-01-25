@@ -16,10 +16,13 @@ import (
 )
 
 func enrich(src map[string]interface{}, enrichmentMap map[string]int, enrichKeys []string) {
-	if v, ok := src; ok {
-		src[key+".code"] = keyMap[key]
-	}
-	fmt.Println(src[key+".code"])
+	/*
+		if v, ok := src; ok {
+			src[key+".code"] = keyMap[key]
+		}
+	*/
+	fmt.Println(enrichmentMap)
+	fmt.Println(enrichKeys)
 }
 
 //only direct paths supported
@@ -41,7 +44,7 @@ func flattenMap(esClient *es.Client, src map[string]interface{}, path []string, 
 			for i := 0; i < reflect.ValueOf(v).Len(); i++ {
 				v := reflect.ValueOf(v).Index(i).Interface().(map[string]interface{})
 				if _, ok := v[path[pathIndex+1]]; ok {
-					flattenMap(esClient, v, path, pathIndex+1, newHeader)
+					flattenMap(esClient, v, path, pathIndex+1, newHeader, enrichmentMap, enrichKeys)
 				}
 			}
 		} else {
@@ -59,7 +62,7 @@ func flattenList(esClient *es.Client, src map[string]interface{}, path []string,
 
 	for i := 0; i < reflect.ValueOf(src["data"]).Len(); i++ {
 		v := reflect.ValueOf(src["data"]).Index(i).Interface()
-		flattenMap(esClient, v.(map[string]interface{}), path, pathIndex, newHeader, enrichmentMap)
+		flattenMap(esClient, v.(map[string]interface{}), path, pathIndex, newHeader, enrichmentMap, enrichKeys)
 	}
 
 }
@@ -156,31 +159,37 @@ type postReqHandler struct {
 
 func (prh *postReqHandler) vxlanSysEpsHandler(w http.ResponseWriter, r *http.Request) {
 	var path = []string{"nvoEps", "nvoEp", "nvoNws", "nvoNw"}
+	var enrichKeys = []string{}
 	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys)
 }
 
 func (prh *postReqHandler) vxlanSysBdHandler(w http.ResponseWriter, r *http.Request) {
 	var path = []string{"l2VlanStats"}
+	var enrichKeys = []string{}
 	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys)
 }
 
 func (prh *postReqHandler) vxlanSysIntfHandler(w http.ResponseWriter, r *http.Request) {
 	var path = []string{"l1PhysIf", "rmonIfIn"}
+	var enrichKeys = []string{}
 	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys)
 }
 
 func (prh *postReqHandler) vxlanSysChHandler(w http.ResponseWriter, r *http.Request) {
 	var path = []string{"eqptSupCSlot", "eqptSupC", "eqptCPU"}
+	var enrichKeys = []string{}
 	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys)
 }
 
 func (prh *postReqHandler) vxlanSysProcHandler(w http.ResponseWriter, r *http.Request) {
 	var path = []string{"procEntity", "procEntry"}
+	var enrichKeys = []string{}
 	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys)
 }
 
 func (prh *postReqHandler) customSysBgp(w http.ResponseWriter, r *http.Request) {
 	var path = []string{"bgpEntity", "bgpInst", "bgpDom", "bgpPeer", "bgpPeerEntry", "bgpPeerEntryStats"}
+	var enrichKeys = []string{"bgpPeerState.statw"}
 	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys)
 	/*
 		if r.Method != "POST" {
@@ -206,12 +215,12 @@ func (prh *postReqHandler) customSysBgp(w http.ResponseWriter, r *http.Request) 
 }
 
 func enrichmentMapCreate() map[string]map[string]int {
-	var Enrichment = map[string]map[string]int{}
+	var EnrichmentMap = map[string]map[string]int{}
 
-	Enrichment["bgpPeerEntry.operSt"] = map[string]int{}
-	Enrichment["bgpPeerEntry.operSt"]["established"] = 1
+	EnrichmentMap["bgpPeerEntry.operSt"] = map[string]int{}
+	EnrichmentMap["bgpPeerEntry.operSt"]["established"] = 1
 
-	return Enrichment
+	return EnrichmentMap
 }
 
 func main() {
