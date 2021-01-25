@@ -48,7 +48,7 @@ func flattenMap(esClient *es.Client, src map[string]interface{}, path []string, 
 				}
 			}
 		} else {
-			enrich(newHeader, enrichmentMap)
+			enrich(newHeader, enrichmentMap, enrichKeys)
 			esPush(esClient, "golang-index", newHeader)
 		}
 	}
