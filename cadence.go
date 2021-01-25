@@ -33,15 +33,16 @@ func flattenMap(esClient *es.Client, src map[string]interface{}, path []string, 
 				v := reflect.ValueOf(v).Index(i).Interface().(map[string]interface{})
 				if _, ok := v[path[pathIndex+1]]; ok {
 					flattenMap(esClient, v, path, pathIndex+1, newHeader)
+				} else {
+					fmt.Println("AAAAAAAAAAAAAAAAAAAAAAAAA")
+					PrettyPrint(newHeader)
+					esPush(esClient, "golang-index", newHeader)
 				}
 			}
 		} else {
 			PrettyPrint(newHeader)
 			esPush(esClient, "golang-index", newHeader)
 		}
-	} else {
-		PrettyPrint(newHeader)
-		esPush(esClient, "golang-index", newHeader)
 	}
 }
 
