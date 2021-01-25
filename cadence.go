@@ -15,6 +15,13 @@ import (
 	esapi "github.com/elastic/go-elasticsearch/esapi"
 )
 
+func enrich(src map[string]interface{}, keyMap map[string]int, key string){
+	if v, ok := src {
+		src[key + ".code"] = keyMap[key]
+	}
+	fmt.Println(src[key + ".code"])
+}
+
 //only direct paths supported
 func flattenMap(esClient *es.Client, src map[string]interface{}, path []string, pathIndex int, header map[string]interface{}) {
 	newHeader := make(map[string]interface{})
@@ -38,7 +45,7 @@ func flattenMap(esClient *es.Client, src map[string]interface{}, path []string, 
 				}
 			}
 		} else {
-
+			//enrich() 
 			esPush(esClient, "golang-index", newHeader)
 		}
 	}
@@ -144,6 +151,7 @@ func worker(esClient *es.Client, r *http.Request, path []string) {
 
 type postReqHandler struct {
 	esClient *es.Client
+	enrichmentMap map[string]map[string]int
 }
 
 func (prh *postReqHandler) vxlanSysEpsHandler(w http.ResponseWriter, r *http.Request) {
@@ -173,6 +181,7 @@ func (prh *postReqHandler) vxlanSysProcHandler(w http.ResponseWriter, r *http.Re
 
 func (prh *postReqHandler) customSysBgp(w http.ResponseWriter, r *http.Request) {
 	var path = []string{"bgpEntity", "bgpInst", "bgpDom", "bgpPeer", "bgpPeerEntry", "bgpPeerEntryStats"}
+	fmt.Println(prh.enrichmentMap)
 	worker(prh.esClient, r, path)
 	/*
 		if r.Method != "POST" {
@@ -197,6 +206,15 @@ func (prh *postReqHandler) customSysBgp(w http.ResponseWriter, r *http.Request) 
 
 }
 
+func enrichmentMapCreate() (map[string]map[string]int){
+	var Enrichment = map[string]map[string]int{}
+
+	Enrichment["bgpPeerEntry.operSt"] = map[string]int{}
+	Enrichment["bgpPeerEntry.operSt"]["established"] = 1
+
+	return Enrichment
+}
+
 func main() {
 	esClient, error := esConnect("10.62.186.54", "9200")
 
@@ -204,7 +222,9 @@ func main() {
 		log.Fatalf("error: %s", error)
 	}
 
-	postReqHandler := &postReqHandler{esClient: esClient}
+	var enrichmentMap map[string]map[string]int = enrichmentMapCreate()
+
+	postReqHandler := &postReqHandler{esClient: esClient, enrichmentMap: enrichmentMap}
 	http.HandleFunc("/network/vxlan:sys/eps", postReqHandler.vxlanSysEpsHandler)
 	http.HandleFunc("/network/vxlan:sys/bd", postReqHandler.vxlanSysBdHandler)
 	http.HandleFunc("/network/interface:sys/intf", postReqHandler.vxlanSysIntfHandler)
