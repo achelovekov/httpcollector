@@ -227,7 +227,7 @@ func enrichmentMapCreate() map[string]map[string]int {
 	EnrichmentMap["bgpPeerEntry.operSt"]["error"] = 10
 	EnrichmentMap["bgpPeerEntry.operSt"]["unknown"] = 11
 
-	EnrichmentMap["bgpPeerEntry.operSt"] = map[string]int{}
+	EnrichmentMap["nvoEp.operState"] = map[string]int{}
 	EnrichmentMap["nvoEp.operState"]["up"] = 1
 
 	return EnrichmentMap
