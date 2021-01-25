@@ -31,7 +31,7 @@ func flattenMap(esClient *es.Client, src map[string]interface{}, path [][]string
 	}
 
 	for index := range path[pathIndex] {
-		fmt.Printf("index - %v", index)
+		fmt.Printf("index - %v\n", index)
 		if _, ok := src[path[pathIndex][index]]; ok {
 			v := reflect.ValueOf(src[path[pathIndex][index]]).Interface().(map[string]interface{})
 			if v, ok := v["attributes"]; ok {
