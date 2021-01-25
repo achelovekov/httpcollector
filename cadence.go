@@ -232,8 +232,8 @@ func enrichmentMapCreate() map[string]map[string]int {
 	EnrichmentMap["nvoEp.operState"]["down"] = 0
 
 	EnrichmentMap["nvoDyPeer.state"] = map[string]int{}
-	EnrichmentMap["nvoDyPeer.state"]["up"] = 1
-	EnrichmentMap["nvoDyPeer.state"]["down"] = 0
+	EnrichmentMap["nvoDyPeer.state"]["Up"] = 1
+	EnrichmentMap["nvoDyPeer.state"]["Down"] = 0
 
 	return EnrichmentMap
 }
