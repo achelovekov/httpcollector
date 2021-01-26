@@ -204,7 +204,7 @@ func (prh *postReqHandler) vxlanSysProcHandler(w http.ResponseWriter, r *http.Re
 }
 
 func (prh *postReqHandler) vxlanSysProcSysHandler(w http.ResponseWriter, r *http.Request) {
-	var path = [][]string{{"procSysLoad"}}
+	var path = [][]string{{"procSysLoad", "procSysMemUsed", "procSysCpuSummary"}}
 	var enrichKeys = []string{}
 	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys)
 }
