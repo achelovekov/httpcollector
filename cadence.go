@@ -19,7 +19,7 @@ import (
 func enrich(src map[string]interface{}, enrichmentMap map[string]map[string]int, enrichKeys []string) {
 	for _, key := range enrichKeys {
 		if v, ok := src[key]; ok {
-			fmt.Printf("value - %v", v)
+			fmt.Printf("key - %v, value - %v\n", k, v)
 			src[key+"/code"] = enrichmentMap[key][v.(string)]
 		}
 	}
