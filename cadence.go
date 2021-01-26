@@ -116,7 +116,7 @@ func esPush(esClient *es.Client, indexName string, body map[string]interface{}) 
 	}
 	defer res.Body.Close()
 
-	log.Println(res)
+	//log.Println(res)
 }
 
 func PrettyPrint(src map[string]interface{}) {
@@ -139,17 +139,17 @@ func worker(esClient *es.Client, r *http.Request, path [][]string, enrichmentMap
 		if err != nil {
 			panic(err)
 		}
+		/*
+			srcJSON, err := json.MarshalIndent(src, "", "  ")
+			if err != nil {
+				log.Fatalf(err.Error())
+			}
+			fmt.Printf("MarshalIndent function output %s\n", string(srcJSON))
 
-		srcJSON, err := json.MarshalIndent(src, "", "  ")
-		if err != nil {
-			log.Fatalf(err.Error())
-		}
-		fmt.Printf("MarshalIndent function output %s\n", string(srcJSON))
-
-		if err != nil {
-			log.Fatalf(err.Error())
-		}
-
+			if err != nil {
+				log.Fatalf(err.Error())
+			}
+		*/
 		var pathIndex int
 
 		newHeader := make(map[string]interface{})
