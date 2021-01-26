@@ -19,7 +19,6 @@ import (
 func enrich(src map[string]interface{}, enrichmentMap map[string]map[string]int, enrichKeys []string) {
 	for _, key := range enrichKeys {
 		if v, ok := src[key]; ok {
-			fmt.Printf("key - %v, value - %v\n", key, v)
 			if reflect.ValueOf(v).Type().Kind() == reflect.Int {
 				v = strconv.Itoa(v.(int))
 			}
