@@ -203,6 +203,12 @@ func (prh *postReqHandler) vxlanSysProcHandler(w http.ResponseWriter, r *http.Re
 	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys)
 }
 
+func (prh *postReqHandler) vxlanSysProcSysHandler(w http.ResponseWriter, r *http.Request) {
+	var path = [][]string{}
+	var enrichKeys = []string{}
+	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys)
+}
+
 func (prh *postReqHandler) customSysBgp(w http.ResponseWriter, r *http.Request) {
 	var path = [][]string{{"bgpEntity"}, {"bgpInst"}, {"bgpDom"}, {"bgpPeer"}, {"bgpPeerEntry"}, {"bgpPeerEntryStats", "bgpPeerAfEntry"}}
 	var enrichKeys = []string{"bgpPeerEntry.operSt"}
@@ -272,7 +278,8 @@ func main() {
 	//http.HandleFunc("/network/vxlan:sys/bd", postReqHandler.vxlanSysBdHandler)
 	//http.HandleFunc("/network/interface:sys/intf", postReqHandler.vxlanSysIntfHandler)
 	//http.HandleFunc("/network/environment:sys/ch", postReqHandler.vxlanSysChHandler)
-	http.HandleFunc("/network/resources:sys/proc", postReqHandler.vxlanSysProcHandler)
+	//http.HandleFunc("/network/resources:sys/proc", postReqHandler.vxlanSysProcHandler)
+	http.HandleFunc("/network/resources:sys/procsys", postReqHandler.vxlanSysProcSysHandler)
 	//http.HandleFunc("/network/sys/bgp", postReqHandler.customSysBgp)
 	//http.HandleFunc("/network/sys/ospf", postReqHandler.customSysOspf)
 
