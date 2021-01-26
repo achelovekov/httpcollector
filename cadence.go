@@ -36,7 +36,7 @@ func toInt(v interface{}) interface{} {
 	return v
 }
 
-//only direct paths supported
+//only direct paths supported. Full path to end must be specified (no children).
 func flattenMap(esClient *es.Client, src map[string]interface{}, path [][]string, pathIndex int, header map[string]interface{}, enrichmentMap map[string]map[string]int, enrichKeys []string) {
 	newHeader := make(map[string]interface{})
 	for k, v := range header {
@@ -248,6 +248,9 @@ func enrichmentMapCreate() map[string]map[string]int {
 	EnrichmentMap["eqptSupC.operSt"] = map[string]int{}
 	EnrichmentMap["eqptSupC.operSt"]["online"] = 1
 	EnrichmentMap["eqptSupC.operSt"]["offline"] = 0
+
+	EnrichmentMap["eqptLC.operSt"] = map[string]int{}
+	EnrichmentMap["eqptLC.operSt"]["online"] = 1
 
 	return EnrichmentMap
 }
