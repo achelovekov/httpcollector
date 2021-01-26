@@ -191,13 +191,13 @@ func (prh *postReqHandler) vxlanSysIntfHandler(w http.ResponseWriter, r *http.Re
 	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys)
 }
 
-/*
 func (prh *postReqHandler) vxlanSysChHandler(w http.ResponseWriter, r *http.Request) {
 	var path = []string{"eqptSupCSlot", "eqptSupC", "eqptCPU"}
 	var enrichKeys = []string{}
 	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys)
 }
 
+/*
 func (prh *postReqHandler) vxlanSysProcHandler(w http.ResponseWriter, r *http.Request) {
 	var path = []string{"procEntity", "procEntry"}
 	var enrichKeys = []string{}
