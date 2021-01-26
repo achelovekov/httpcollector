@@ -130,7 +130,7 @@ func Flatten(esClient *es.Client, src map[string]interface{}, path []string, pat
 		esPush(esClient, "golang-index", newHeader)
 	} else if reflect.ValueOf(src[path[pathIndex]]).Len() == 0 {
 		newHeader[path[pathIndex]] = make([]interface{}, 0)
-		PrettyPrint(newHeader)
+		//PrettyPrint(newHeader)
 		esPush(esClient, "golang-index", newHeader)
 	} else {
 		for i := 0; i < reflect.ValueOf(src[path[pathIndex]]).Len(); i++ {
@@ -153,17 +153,17 @@ func worker(esClient *es.Client, r *http.Request, path []string) {
 		if err != nil {
 			panic(err)
 		}
+		/*
+			srcJSON, err := json.MarshalIndent(src, "", "  ")
+			if err != nil {
+				log.Fatalf(err.Error())
+			}
+			fmt.Printf("MarshalIndent function output %s\n", string(srcJSON))
 
-		srcJSON, err := json.MarshalIndent(src, "", "  ")
-		if err != nil {
-			log.Fatalf(err.Error())
-		}
-		fmt.Printf("MarshalIndent function output %s\n", string(srcJSON))
-
-		if err != nil {
-			log.Fatalf(err.Error())
-		}
-
+			if err != nil {
+				log.Fatalf(err.Error())
+			}
+		*/
 		var pathIndex int
 
 		header := make(map[string]interface{})
