@@ -193,7 +193,7 @@ func (prh *postReqHandler) vxlanSysIntfHandler(w http.ResponseWriter, r *http.Re
 
 func (prh *postReqHandler) vxlanSysChHandler(w http.ResponseWriter, r *http.Request) {
 	var path = [][]string{{"eqptSupCSlot"}, {"eqptSupC"}, {"eqptCPU"}}
-	var enrichKeys = []string{}
+	var enrichKeys = []string{"eqptSupC.operSt"}
 	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys)
 }
 
@@ -244,6 +244,10 @@ func enrichmentMapCreate() map[string]map[string]int {
 	EnrichmentMap["l1PhysIf.adminSt"] = map[string]int{}
 	EnrichmentMap["l1PhysIf.adminSt"]["up"] = 1
 	EnrichmentMap["l1PhysIf.adminSt"]["down"] = 0
+
+	EnrichmentMap["eqptSupC.operSt"] = map[string]int{}
+	EnrichmentMap["eqptSupC.operSt"]["online"] = 1
+	EnrichmentMap["eqptSupC.operSt"]["offline"] = 0
 
 	return EnrichmentMap
 }
