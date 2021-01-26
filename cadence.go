@@ -119,7 +119,7 @@ func esPush(esClient *es.Client, indexName string, body map[string]interface{}) 
 	}
 	defer res.Body.Close()
 
-	log.Println(res)
+	//log.Println(res)
 }
 
 func PrettyPrint(src map[string]interface{}) {
