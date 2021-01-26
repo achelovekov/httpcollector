@@ -130,7 +130,7 @@ func Flatten(esClient *es.Client, src map[string]interface{}, path []string, pat
 		esPush(esClient, "golang-index", newHeader)
 	} else if reflect.ValueOf(src[path[pathIndex]]).Len() == 0 {
 		newHeader[path[pathIndex]] = make([]interface{}, 0)
-		//PrettyPrint(newHeader)
+		PrettyPrint(newHeader)
 		esPush(esClient, "golang-index", newHeader)
 	} else {
 		for i := 0; i < reflect.ValueOf(src[path[pathIndex]]).Len(); i++ {
@@ -208,7 +208,7 @@ func main() {
 	http.HandleFunc("/network/rib", postReqHandler.ribhandler)
 	http.HandleFunc("/network/mac-all", postReqHandler.macAllHandler)
 	http.HandleFunc("/network/adjacency", postReqHandler.adjacencyHandler)
-	http.HandleFunc("/network/EVENT-LIST", postReqHandler.eventHandler)
+	//http.HandleFunc("/network/EVENT-LIST", postReqHandler.eventHandler)
 	//http.HandleFunc("/network/vxlan:sys/eps", postReqHandler.vxlanSysEpsHandler)
 	//http.HandleFunc("/network/vxlan:sys/bd", postReqHandler.vxlanSysBdHandler)
 
