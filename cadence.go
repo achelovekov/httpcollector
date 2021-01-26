@@ -199,7 +199,7 @@ func (prh *postReqHandler) vxlanSysChHandler(w http.ResponseWriter, r *http.Requ
 
 func (prh *postReqHandler) vxlanSysProcHandler(w http.ResponseWriter, r *http.Request) {
 	var path = [][]string{{"procEntity"}, {"procEntry"}}
-	var enrichKeys = []string{}
+	var enrichKeys = []string{"procEntry.operState"}
 	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys)
 }
 
@@ -250,6 +250,10 @@ func enrichmentMapCreate() map[string]map[string]int {
 
 	EnrichmentMap["eqptLC.operSt"] = map[string]int{}
 	EnrichmentMap["eqptLC.operSt"]["online"] = 1
+
+	EnrichmentMap["procEntry.operState"] = map[string]int{}
+	EnrichmentMap["procEntry.operState"]["up"] = 1
+	EnrichmentMap["procEntry.operState"]["down"] = 0
 
 	return EnrichmentMap
 }
