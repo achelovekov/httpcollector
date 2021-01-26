@@ -66,7 +66,7 @@ func flattenMap(esClient *es.Client, src map[string]interface{}, path [][]string
 				}
 			} else {
 				enrich(newHeader, enrichmentMap, enrichKeys)
-				PrettyPrint(newHeader)
+				//PrettyPrint(newHeader)
 				esPush(esClient, "golang-index", newHeader)
 			}
 		}
@@ -277,14 +277,14 @@ func main() {
 	var enrichmentMap map[string]map[string]int = enrichmentMapCreate()
 
 	postReqHandler := &postReqHandler{esClient: esClient, enrichmentMap: enrichmentMap}
-	//http.HandleFunc("/network/vxlan:sys/eps", postReqHandler.vxlanSysEpsHandler)
-	//http.HandleFunc("/network/vxlan:sys/bd", postReqHandler.vxlanSysBdHandler)
+	http.HandleFunc("/network/vxlan:sys/eps", postReqHandler.vxlanSysEpsHandler)
+	http.HandleFunc("/network/vxlan:sys/bd", postReqHandler.vxlanSysBdHandler)
 	http.HandleFunc("/network/interface:sys/intf", postReqHandler.vxlanSysIntfHandler)
-	//http.HandleFunc("/network/environment:sys/ch", postReqHandler.vxlanSysChHandler)
-	//http.HandleFunc("/network/resources:sys/proc", postReqHandler.vxlanSysProcHandler)
-	//http.HandleFunc("/network/resources:sys/procsys", postReqHandler.vxlanSysProcSysHandler)
-	//http.HandleFunc("/network/sys/bgp", postReqHandler.customSysBgp)
-	//http.HandleFunc("/network/sys/ospf", postReqHandler.customSysOspf)
+	http.HandleFunc("/network/environment:sys/ch", postReqHandler.vxlanSysChHandler)
+	http.HandleFunc("/network/resources:sys/proc", postReqHandler.vxlanSysProcHandler)
+	http.HandleFunc("/network/resources:sys/procsys", postReqHandler.vxlanSysProcSysHandler)
+	http.HandleFunc("/network/sys/bgp", postReqHandler.customSysBgp)
+	http.HandleFunc("/network/sys/ospf", postReqHandler.customSysOspf)
 
 	http.ListenAndServe(":11000", nil)
 
