@@ -187,7 +187,7 @@ func (prh *postReqHandler) vxlanSysBdHandler(w http.ResponseWriter, r *http.Requ
 
 func (prh *postReqHandler) vxlanSysIntfHandler(w http.ResponseWriter, r *http.Request) {
 	var path = [][]string{{"l1PhysIf"}, {"rmonIfIn"}}
-	var enrichKeys = []string{}
+	var enrichKeys = []string{"l1PhysIf.adminSt"}
 	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys)
 }
 
@@ -240,6 +240,10 @@ func enrichmentMapCreate() map[string]map[string]int {
 	EnrichmentMap["nvoDyPeer.state"] = map[string]int{}
 	EnrichmentMap["nvoDyPeer.state"]["Up"] = 1
 	EnrichmentMap["nvoDyPeer.state"]["Down"] = 0
+
+	EnrichmentMap["l1PhysIf.adminSt"] = map[string]int{}
+	EnrichmentMap["l1PhysIf.adminSt"]["up"] = 1
+	EnrichmentMap["l1PhysIf.adminSt"]["down"] = 0
 
 	return EnrichmentMap
 }
