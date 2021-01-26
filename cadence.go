@@ -192,7 +192,7 @@ func (prh *postReqHandler) vxlanSysIntfHandler(w http.ResponseWriter, r *http.Re
 }
 
 func (prh *postReqHandler) vxlanSysChHandler(w http.ResponseWriter, r *http.Request) {
-	var path = [][]string{{"eqptLCSlot", "eqptSupCSlot"}, {"eqptLC", "eqptSupC"}, {"eqptCPU"}}
+	var path = [][]string{{"eqptLCSlot", "eqptSupCSlot"}, {"eqptLC", "eqptSupC"}, {"eqptLeafP", "eqptCPU"}}
 	var enrichKeys = []string{"eqptSupC.operSt"}
 	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys)
 }
