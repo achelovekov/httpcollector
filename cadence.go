@@ -19,6 +19,7 @@ import (
 func enrich(src map[string]interface{}, enrichmentMap map[string]map[string]int, enrichKeys []string) {
 	for _, key := range enrichKeys {
 		if v, ok := src[key]; ok {
+			fmt.Printf("value - %v", v)
 			src[key+"/code"] = enrichmentMap[key][v.(string)]
 		}
 	}
@@ -63,7 +64,7 @@ func flattenMap(esClient *es.Client, src map[string]interface{}, path [][]string
 				}
 			} else {
 				enrich(newHeader, enrichmentMap, enrichKeys)
-				PrettyPrint(newHeader)
+				//PrettyPrint(newHeader)
 				esPush(esClient, "golang-index", newHeader)
 			}
 		}
