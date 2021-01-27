@@ -30,6 +30,14 @@ func enrich(src map[string]interface{}, enrichmentMap map[string]map[string]int,
 	}
 }
 
+func filter(src map[string]interface{}, filterList []string) {
+	for _, key := range filterList {
+		if _, ok := src[key]; ok {
+			delete(src, key)
+		}
+	}
+}
+
 func toInt(v interface{}) interface{} {
 	if reflect.ValueOf(v).Type().Kind() == reflect.String {
 		vInt, err := strconv.Atoi(v.(string))
@@ -43,7 +51,7 @@ func toInt(v interface{}) interface{} {
 }
 
 //only direct paths supported. Full path to end must be specified (no children).
-func flattenMap(esClient *es.Client, src map[string]interface{}, path [][]string, pathIndex int, header map[string]interface{}, enrichmentMap map[string]map[string]int, enrichKeys []string) {
+func flattenMap(esClient *es.Client, src map[string]interface{}, path [][]string, pathIndex int, header map[string]interface{}, enrichmentMap map[string]map[string]int, enrichKeys []string, filterList []string) {
 	newHeader := make(map[string]interface{})
 	for k, v := range header {
 		newHeader[k] = toInt(v)
@@ -63,12 +71,13 @@ func flattenMap(esClient *es.Client, src map[string]interface{}, path [][]string
 					v := reflect.ValueOf(v).Index(i).Interface().(map[string]interface{})
 					for index := range path[pathIndex+1] {
 						if _, ok := v[path[pathIndex+1][index]]; ok {
-							flattenMap(esClient, v, path, pathIndex+1, newHeader, enrichmentMap, enrichKeys)
+							flattenMap(esClient, v, path, pathIndex+1, newHeader, enrichmentMap, enrichKeys, filterList)
 						}
 					}
 				}
 			} else {
 				enrich(newHeader, enrichmentMap, enrichKeys)
+				filter(newHeader, filterList)
 				PrettyPrint(newHeader)
 				esPush(esClient, "golang-index", newHeader)
 			}
@@ -76,7 +85,7 @@ func flattenMap(esClient *es.Client, src map[string]interface{}, path [][]string
 	}
 }
 
-func flattenList(esClient *es.Client, src map[string]interface{}, path [][]string, pathIndex int, header map[string]interface{}, enrichmentMap map[string]map[string]int, enrichKeys []string) {
+func flattenList(esClient *es.Client, src map[string]interface{}, path [][]string, pathIndex int, header map[string]interface{}, enrichmentMap map[string]map[string]int, enrichKeys []string, filterList []string) {
 	newHeader := make(map[string]interface{})
 	for k, v := range header {
 		newHeader[k] = v
@@ -84,7 +93,7 @@ func flattenList(esClient *es.Client, src map[string]interface{}, path [][]strin
 
 	for i := 0; i < reflect.ValueOf(src["data"]).Len(); i++ {
 		v := reflect.ValueOf(src["data"]).Index(i).Interface()
-		flattenMap(esClient, v.(map[string]interface{}), path, pathIndex, newHeader, enrichmentMap, enrichKeys)
+		flattenMap(esClient, v.(map[string]interface{}), path, pathIndex, newHeader, enrichmentMap, enrichKeys, filterList)
 	}
 
 }
@@ -133,7 +142,7 @@ func PrettyPrint(src map[string]interface{}) {
 	fmt.Printf("Pretty processed output %s\n", string(empJSON))
 }
 
-func worker(esClient *es.Client, r *http.Request, path [][]string, enrichmentMap map[string]map[string]int, enrichKeys []string) {
+func worker(esClient *es.Client, r *http.Request, path [][]string, enrichmentMap map[string]map[string]int, enrichKeys []string, filterList []string) {
 	if r.Method != "POST" {
 		fmt.Println("Is not POST method")
 		return
@@ -167,9 +176,9 @@ func worker(esClient *es.Client, r *http.Request, path [][]string, enrichmentMap
 		}
 
 		if reflect.ValueOf(src["data"]).Type().Kind() == reflect.Map {
-			flattenMap(esClient, src["data"].(map[string]interface{}), path, pathIndex, newHeader, enrichmentMap, enrichKeys)
+			flattenMap(esClient, src["data"].(map[string]interface{}), path, pathIndex, newHeader, enrichmentMap, enrichKeys, filterList)
 		} else {
-			flattenList(esClient, src, path, pathIndex, newHeader, enrichmentMap, enrichKeys)
+			flattenList(esClient, src, path, pathIndex, newHeader, enrichmentMap, enrichKeys, filterList)
 		}
 	}
 }
@@ -177,8 +186,10 @@ func worker(esClient *es.Client, r *http.Request, path [][]string, enrichmentMap
 type postReqHandler struct {
 	esClient      *es.Client
 	enrichmentMap map[string]map[string]int
+	filterList    []string
 }
 
+/*
 func (prh *postReqHandler) sysEpsHandler(w http.ResponseWriter, r *http.Request) {
 	var path = [][]string{{"nvoEps"}, {"nvoEp"}, {"nvoPeers", "nvoNws"}, {"nvoDyPeer", "nvoNw"}}
 	var enrichKeys = []string{"nvoEp.operState", "nvoDyPeer.state"}
@@ -214,19 +225,21 @@ func (prh *postReqHandler) sysProcSysHandler(w http.ResponseWriter, r *http.Requ
 	var enrichKeys = []string{}
 	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys)
 }
-
+*/
 func (prh *postReqHandler) customSysBgp(w http.ResponseWriter, r *http.Request) {
 	var path = [][]string{{"bgpEntity"}, {"bgpInst"}, {"bgpDom"}, {"bgpPeer"}, {"bgpPeerEntry"}, {"bgpPeerEntryStats", "bgpPeerAfEntry"}}
 	var enrichKeys = []string{"bgpPeerEntry.operSt"}
-	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys)
+	var filterList = []string{"bgpPeerEntry.modTs"}
+	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys, filterList)
 }
 
+/*
 func (prh *postReqHandler) customSysOspf(w http.ResponseWriter, r *http.Request) {
 	var path = [][]string{{"ospfEntity"}, {"ospfInst"}, {"ospfDom"}, {"ospfArea"}, {"ospfAreaStats"}}
 	var enrichKeys = []string{}
-	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys)
+	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys, filterList)
 }
-
+*/
 func enrichmentMapCreate() map[string]map[string]int {
 	var EnrichmentMap = map[string]map[string]int{}
 
