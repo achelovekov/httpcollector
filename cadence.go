@@ -33,6 +33,7 @@ func enrich(src map[string]interface{}, enrichmentMap map[string]map[string]int,
 func filter(src map[string]interface{}, filterList []string) {
 	for _, key := range filterList {
 		if _, ok := src[key]; ok {
+			fmt.Printf("SUCCESSFULY DELETED - %v\n", key)
 			delete(src, key)
 		}
 	}
@@ -41,7 +42,6 @@ func filter(src map[string]interface{}, filterList []string) {
 func toInt(v interface{}) interface{} {
 	if reflect.ValueOf(v).Type().Kind() == reflect.String {
 		vInt, err := strconv.Atoi(v.(string))
-
 		if err != nil {
 			return v
 		}
