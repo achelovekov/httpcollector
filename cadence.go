@@ -229,7 +229,7 @@ func (prh *postReqHandler) sysProcSysHandler(w http.ResponseWriter, r *http.Requ
 func (prh *postReqHandler) customSysBgp(w http.ResponseWriter, r *http.Request) {
 	var path = [][]string{{"bgpEntity"}, {"bgpInst"}, {"bgpDom"}, {"bgpPeer"}, {"bgpPeerEntry"}, {"bgpPeerEntryStats", "bgpPeerAfEntry"}}
 	var enrichKeys = []string{"bgpPeerEntry.operSt"}
-	var filterList = []string{"bgpPeerEntry.modTs"}
+	var filterList = []string{"bgpPeerEntry.modTs", "bgpPeerAfEntry.acceptedPaths", "bgpPeerAfEntry.deniedPaths", "bgpPeerAfEntry.firstEorRcvdTs", "bgpPeerAfEntry.flags", "bgpPeerAfEntry.lastEorRcvdTs", "bgpPeerAfEntry.memAccPaths", "bgpPeerAfEntry.peerTblVer", "bgpPeerAfEntry.pfxFlushed", "bgpPeerAfEntry.pfxSaved", "bgpPeerAfEntry.pfxSent", "bgpPeerAfEntry.rn", "bgpPeerAfEntry.tblSt", "bgpPeerAfEntry.tblVer", "bgpPeerAfEntry.treatAswithDrawnPaths", "bgpPeerAfEntry.type", "bgpPeerAfEntry.withDrawnPaths", "bgpPeerEntry.addr", "bgpPeerEntry.advCap", "bgpPeerEntry.childAction", "bgpPeerEntry.connAttempts", "bgpPeerEntry.connDrop", "bgpPeerEntry.connEst", "bgpPeerEntry.connIf", "bgpPeerEntry.fd", "bgpPeerEntry.flags", "bgpPeerEntry.holdIntvl", "bgpPeerEntry.kaIntvl", "bgpPeerEntry.lastFlapTs", "bgpPeerEntry.localIp", "bgpPeerEntry.localPort", "bgpPeerEntry.maxConnRetryIntvl", "bgpPeerEntry.operSt", "bgpPeerEntry.operSt/code", "bgpPeerEntry.passwdSet", "bgpPeerEntry.peerIdx", "bgpPeerEntry.prevOperSt", "bgpPeerEntry.rcvCap", "bgpPeerEntry.remotePort", "bgpPeerEntry.rn", "bgpPeerEntry.rtrId", "bgpPeerEntry.shutStQual", "bgpPeerEntry.stReason", "bgpPeerEntry.status", "bgpPeerEntry.type", "bgpPeerEntry.updateElapsedTs"}
 	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys, filterList)
 }
 
