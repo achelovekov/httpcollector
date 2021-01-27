@@ -213,7 +213,7 @@ func (prh *postReqHandler) sysIntfHandler(w http.ResponseWriter, r *http.Request
 func (prh *postReqHandler) sysChHandler(w http.ResponseWriter, r *http.Request) {
 	var path = [][]string{{"eqptLCSlot", "eqptSupCSlot"}, {"eqptLC", "eqptSupC"}, {"eqptSpromLc", "eqptCPU"}, {"eqptSpCmnBlk"}}
 	var enrichKeys = []string{"eqptSupC.operSt", "eqptLC.operSt"}
-	var filterList = []string{}
+	var filterList = []string{"eqptSpromLc.modTs"}
 	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys, filterList)
 }
 
