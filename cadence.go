@@ -78,7 +78,7 @@ func flattenMap(esClient *es.Client, src map[string]interface{}, path [][]string
 			} else {
 				enrich(newHeader, enrichmentMap, enrichKeys)
 				filter(newHeader, filterList)
-				PrettyPrint(newHeader)
+				//PrettyPrint(newHeader)
 				esPush(esClient, "golang-index", newHeader)
 			}
 		}
@@ -131,7 +131,7 @@ func esPush(esClient *es.Client, indexName string, body map[string]interface{}) 
 	}
 	defer res.Body.Close()
 
-	log.Println(res)
+	//log.Println(res)
 }
 
 func PrettyPrint(src map[string]interface{}) {
@@ -189,57 +189,62 @@ type postReqHandler struct {
 	filterList    []string
 }
 
-/*
 func (prh *postReqHandler) sysEpsHandler(w http.ResponseWriter, r *http.Request) {
 	var path = [][]string{{"nvoEps"}, {"nvoEp"}, {"nvoPeers", "nvoNws"}, {"nvoDyPeer", "nvoNw"}}
 	var enrichKeys = []string{"nvoEp.operState", "nvoDyPeer.state"}
-	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys)
+	var filterList = []string{}
+	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys, filterList)
 }
 
 func (prh *postReqHandler) sysBdHandler(w http.ResponseWriter, r *http.Request) {
 	var path = [][]string{{"l2VlanStats"}}
 	var enrichKeys = []string{}
-	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys)
+	var filterList = []string{}
+	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys, filterList)
 }
 
 func (prh *postReqHandler) sysIntfHandler(w http.ResponseWriter, r *http.Request) {
 	var path = [][]string{{"l1PhysIf"}, {"rmonIfIn"}}
 	var enrichKeys = []string{"l1PhysIf.adminSt"}
-	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys)
+	var filterList = []string{}
+	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys, filterList)
 }
 
 func (prh *postReqHandler) sysChHandler(w http.ResponseWriter, r *http.Request) {
 	var path = [][]string{{"eqptLCSlot", "eqptSupCSlot"}, {"eqptLC", "eqptSupC"}, {"eqptSpromLc", "eqptCPU"}, {"eqptSpCmnBlk"}}
 	var enrichKeys = []string{"eqptSupC.operSt", "eqptLC.operSt"}
-	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys)
+	var filterList = []string{}
+	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys, filterList)
 }
 
 func (prh *postReqHandler) sysProcHandler(w http.ResponseWriter, r *http.Request) {
 	var path = [][]string{{"procEntity"}, {"procEntry"}}
 	var enrichKeys = []string{"procEntry.operState"}
-	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys)
+	var filterList = []string{}
+	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys, filterList)
 }
 
 func (prh *postReqHandler) sysProcSysHandler(w http.ResponseWriter, r *http.Request) {
 	var path = [][]string{{"procSysLoad", "procSysMemUsed", "procSysCpuSummary"}}
 	var enrichKeys = []string{}
-	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys)
-}
-*/
-func (prh *postReqHandler) customSysBgp(w http.ResponseWriter, r *http.Request) {
-	var path = [][]string{{"bgpEntity"}, {"bgpInst"}, {"bgpDom"}, {"bgpPeer"}, {"bgpPeerEntry"}, {"bgpPeerEntryStats", "bgpPeerAfEntry"}}
-	var enrichKeys = []string{"bgpPeerEntry.operSt"}
-	var filterList = []string{"bgpPeerEntry.modTs", "bgpPeerAfEntry.acceptedPaths", "bgpPeerAfEntry.deniedPaths", "bgpPeerAfEntry.firstEorRcvdTs", "bgpPeerAfEntry.flags", "bgpPeerAfEntry.lastEorRcvdTs", "bgpPeerAfEntry.memAccPaths", "bgpPeerAfEntry.peerTblVer", "bgpPeerAfEntry.pfxFlushed", "bgpPeerAfEntry.pfxSaved", "bgpPeerAfEntry.pfxSent", "bgpPeerAfEntry.rn", "bgpPeerAfEntry.tblSt", "bgpPeerAfEntry.tblVer", "bgpPeerAfEntry.treatAswithDrawnPaths", "bgpPeerAfEntry.type", "bgpPeerAfEntry.withDrawnPaths", "bgpPeerEntry.addr", "bgpPeerEntry.advCap", "bgpPeerEntry.childAction", "bgpPeerEntry.connAttempts", "bgpPeerEntry.connDrop", "bgpPeerEntry.connEst", "bgpPeerEntry.connIf", "bgpPeerEntry.fd", "bgpPeerEntry.flags", "bgpPeerEntry.holdIntvl", "bgpPeerEntry.kaIntvl", "bgpPeerEntry.lastFlapTs", "bgpPeerEntry.localIp", "bgpPeerEntry.localPort", "bgpPeerEntry.maxConnRetryIntvl", "bgpPeerEntry.operSt", "bgpPeerEntry.operSt/code", "bgpPeerEntry.passwdSet", "bgpPeerEntry.peerIdx", "bgpPeerEntry.prevOperSt", "bgpPeerEntry.rcvCap", "bgpPeerEntry.remotePort", "bgpPeerEntry.rn", "bgpPeerEntry.rtrId", "bgpPeerEntry.shutStQual", "bgpPeerEntry.stReason", "bgpPeerEntry.status", "bgpPeerEntry.type", "bgpPeerEntry.updateElapsedTs"}
+	var filterList = []string{}
 	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys, filterList)
 }
 
-/*
+func (prh *postReqHandler) customSysBgp(w http.ResponseWriter, r *http.Request) {
+	var path = [][]string{{"bgpEntity"}, {"bgpInst"}, {"bgpDom"}, {"bgpPeer"}, {"bgpPeerEntry"}, {"bgpPeerEntryStats", "bgpPeerAfEntry"}}
+	var enrichKeys = []string{"bgpPeerEntry.operSt"}
+	var filterList = []string{"bgpPeerEntry.modTs"}
+	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys, filterList)
+}
+
 func (prh *postReqHandler) customSysOspf(w http.ResponseWriter, r *http.Request) {
 	var path = [][]string{{"ospfEntity"}, {"ospfInst"}, {"ospfDom"}, {"ospfArea"}, {"ospfAreaStats"}}
 	var enrichKeys = []string{}
+	var filterList = []string{}
 	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys, filterList)
 }
-*/
+
 func enrichmentMapCreate() map[string]map[string]int {
 	var EnrichmentMap = map[string]map[string]int{}
 
@@ -293,14 +298,14 @@ func main() {
 	var enrichmentMap map[string]map[string]int = enrichmentMapCreate()
 
 	postReqHandler := &postReqHandler{esClient: esClient, enrichmentMap: enrichmentMap}
-	//http.HandleFunc("/network/vxlan:sys/eps", postReqHandler.sysEpsHandler)
-	//http.HandleFunc("/network/vxlan:sys/bd", postReqHandler.sysBdHandler)
-	//http.HandleFunc("/network/interface:sys/intf", postReqHandler.sysIntfHandler)
-	//http.HandleFunc("/network/environment:sys/ch", postReqHandler.sysChHandler)
-	//http.HandleFunc("/network/resources:sys/proc", postReqHandler.sysProcHandler)
-	//http.HandleFunc("/network/resources:sys/procsys", postReqHandler.sysProcSysHandler)
+	http.HandleFunc("/network/vxlan:sys/eps", postReqHandler.sysEpsHandler)
+	http.HandleFunc("/network/vxlan:sys/bd", postReqHandler.sysBdHandler)
+	http.HandleFunc("/network/interface:sys/intf", postReqHandler.sysIntfHandler)
+	http.HandleFunc("/network/environment:sys/ch", postReqHandler.sysChHandler)
+	http.HandleFunc("/network/resources:sys/proc", postReqHandler.sysProcHandler)
+	http.HandleFunc("/network/resources:sys/procsys", postReqHandler.sysProcSysHandler)
 	http.HandleFunc("/network/sys/bgp", postReqHandler.customSysBgp)
-	//http.HandleFunc("/network/sys/ospf", postReqHandler.customSysOspf)
+	http.HandleFunc("/network/sys/ospf", postReqHandler.customSysOspf)
 
 	http.ListenAndServe(":11000", nil)
 
