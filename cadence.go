@@ -24,7 +24,6 @@ func enrich(src map[string]interface{}, enrichmentMap map[string]map[string]int,
 			}
 			if reflect.ValueOf(v).Type().Kind() == reflect.Float64 {
 				v = strconv.FormatFloat(v.(float64), 'E', -1, 64)
-				fmt.Printf("value of float64: %v\n", v)
 			}
 			src[key+"/code"] = enrichmentMap[key][v.(string)]
 		}
@@ -70,7 +69,7 @@ func flattenMap(esClient *es.Client, src map[string]interface{}, path [][]string
 				}
 			} else {
 				enrich(newHeader, enrichmentMap, enrichKeys)
-				//PrettyPrint(newHeader)
+				PrettyPrint(newHeader)
 				esPush(esClient, "golang-index", newHeader)
 			}
 		}
@@ -123,7 +122,7 @@ func esPush(esClient *es.Client, indexName string, body map[string]interface{}) 
 	}
 	defer res.Body.Close()
 
-	//log.Println(res)
+	log.Println(res)
 }
 
 func PrettyPrint(src map[string]interface{}) {
@@ -281,14 +280,14 @@ func main() {
 	var enrichmentMap map[string]map[string]int = enrichmentMapCreate()
 
 	postReqHandler := &postReqHandler{esClient: esClient, enrichmentMap: enrichmentMap}
-	http.HandleFunc("/network/vxlan:sys/eps", postReqHandler.sysEpsHandler)
-	http.HandleFunc("/network/vxlan:sys/bd", postReqHandler.sysBdHandler)
-	http.HandleFunc("/network/interface:sys/intf", postReqHandler.sysIntfHandler)
-	http.HandleFunc("/network/environment:sys/ch", postReqHandler.sysChHandler)
-	http.HandleFunc("/network/resources:sys/proc", postReqHandler.sysProcHandler)
-	http.HandleFunc("/network/resources:sys/procsys", postReqHandler.sysProcSysHandler)
+	//http.HandleFunc("/network/vxlan:sys/eps", postReqHandler.sysEpsHandler)
+	//http.HandleFunc("/network/vxlan:sys/bd", postReqHandler.sysBdHandler)
+	//http.HandleFunc("/network/interface:sys/intf", postReqHandler.sysIntfHandler)
+	//http.HandleFunc("/network/environment:sys/ch", postReqHandler.sysChHandler)
+	//http.HandleFunc("/network/resources:sys/proc", postReqHandler.sysProcHandler)
+	//http.HandleFunc("/network/resources:sys/procsys", postReqHandler.sysProcSysHandler)
 	http.HandleFunc("/network/sys/bgp", postReqHandler.customSysBgp)
-	http.HandleFunc("/network/sys/ospf", postReqHandler.customSysOspf)
+	//http.HandleFunc("/network/sys/ospf", postReqHandler.customSysOspf)
 
 	http.ListenAndServe(":11000", nil)
 
