@@ -33,7 +33,7 @@ func enrich(src map[string]interface{}, enrichmentMap map[string]map[string]int,
 func filter(src map[string]interface{}, filterList []string) {
 	for _, key := range filterList {
 		if _, ok := src[key]; ok {
-			fmt.Printf("SUCCESSFULY DELETED - %v\n", key)
+			//fmt.Printf("SUCCESSFULY DELETED - %v\n", key)
 			delete(src, key)
 		}
 	}
@@ -78,7 +78,7 @@ func flattenMap(esClient *es.Client, src map[string]interface{}, path [][]string
 			} else {
 				enrich(newHeader, enrichmentMap, enrichKeys)
 				filter(newHeader, filterList)
-				PrettyPrint(newHeader)
+				//PrettyPrint(newHeader)
 				esPush(esClient, "golang-index", newHeader)
 			}
 		}
@@ -155,15 +155,15 @@ func worker(esClient *es.Client, r *http.Request, path [][]string, enrichmentMap
 			panic(err)
 		}
 
-		srcJSON, err := json.MarshalIndent(src, "", "  ")
-		if err != nil {
-			log.Fatalf(err.Error())
-		}
-		fmt.Printf("MarshalIndent function output %s\n", string(srcJSON))
+		/* 		srcJSON, err := json.MarshalIndent(src, "", "  ")
+		   		if err != nil {
+		   			log.Fatalf(err.Error())
+		   		}
+		   		fmt.Printf("MarshalIndent function output %s\n", string(srcJSON))
 
-		if err != nil {
-			log.Fatalf(err.Error())
-		}
+		   		if err != nil {
+		   			log.Fatalf(err.Error())
+		   		} */
 
 		var pathIndex int
 
@@ -298,14 +298,14 @@ func main() {
 	var enrichmentMap map[string]map[string]int = enrichmentMapCreate()
 
 	postReqHandler := &postReqHandler{esClient: esClient, enrichmentMap: enrichmentMap}
-	//http.HandleFunc("/network/vxlan:sys/eps", postReqHandler.sysEpsHandler)
-	//http.HandleFunc("/network/vxlan:sys/bd", postReqHandler.sysBdHandler)
-	//http.HandleFunc("/network/interface:sys/intf", postReqHandler.sysIntfHandler)
+	http.HandleFunc("/network/vxlan:sys/eps", postReqHandler.sysEpsHandler)
+	http.HandleFunc("/network/vxlan:sys/bd", postReqHandler.sysBdHandler)
+	http.HandleFunc("/network/interface:sys/intf", postReqHandler.sysIntfHandler)
 	http.HandleFunc("/network/environment:sys/ch", postReqHandler.sysChHandler)
-	//http.HandleFunc("/network/resources:sys/proc", postReqHandler.sysProcHandler)
-	//http.HandleFunc("/network/resources:sys/procsys", postReqHandler.sysProcSysHandler)
-	//http.HandleFunc("/network/sys/bgp", postReqHandler.customSysBgp)
-	//http.HandleFunc("/network/sys/ospf", postReqHandler.customSysOspf)
+	http.HandleFunc("/network/resources:sys/proc", postReqHandler.sysProcHandler)
+	http.HandleFunc("/network/resources:sys/procsys", postReqHandler.sysProcSysHandler)
+	http.HandleFunc("/network/sys/bgp", postReqHandler.customSysBgp)
+	http.HandleFunc("/network/sys/ospf", postReqHandler.customSysOspf)
 
 	http.ListenAndServe(":11000", nil)
 
