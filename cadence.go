@@ -176,37 +176,37 @@ type postReqHandler struct {
 	enrichmentMap map[string]map[string]int
 }
 
-func (prh *postReqHandler) vxlanSysEpsHandler(w http.ResponseWriter, r *http.Request) {
+func (prh *postReqHandler) sysEpsHandler(w http.ResponseWriter, r *http.Request) {
 	var path = [][]string{{"nvoEps"}, {"nvoEp"}, {"nvoPeers", "nvoNws"}, {"nvoDyPeer", "nvoNw"}}
 	var enrichKeys = []string{"nvoEp.operState", "nvoDyPeer.state"}
 	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys)
 }
 
-func (prh *postReqHandler) vxlanSysBdHandler(w http.ResponseWriter, r *http.Request) {
+func (prh *postReqHandler) sysBdHandler(w http.ResponseWriter, r *http.Request) {
 	var path = [][]string{{"l2VlanStats"}}
 	var enrichKeys = []string{}
 	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys)
 }
 
-func (prh *postReqHandler) vxlanSysIntfHandler(w http.ResponseWriter, r *http.Request) {
+func (prh *postReqHandler) sysIntfHandler(w http.ResponseWriter, r *http.Request) {
 	var path = [][]string{{"l1PhysIf"}, {"rmonIfIn"}}
 	var enrichKeys = []string{"l1PhysIf.adminSt"}
 	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys)
 }
 
-func (prh *postReqHandler) vxlanSysChHandler(w http.ResponseWriter, r *http.Request) {
+func (prh *postReqHandler) sysChHandler(w http.ResponseWriter, r *http.Request) {
 	var path = [][]string{{"eqptLCSlot", "eqptSupCSlot"}, {"eqptLC", "eqptSupC"}, {"eqptSpromLc", "eqptCPU"}, {"eqptSpCmnBlk"}}
 	var enrichKeys = []string{"eqptSupC.operSt", "eqptLC.operSt"}
 	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys)
 }
 
-func (prh *postReqHandler) vxlanSysProcHandler(w http.ResponseWriter, r *http.Request) {
+func (prh *postReqHandler) sysProcHandler(w http.ResponseWriter, r *http.Request) {
 	var path = [][]string{{"procEntity"}, {"procEntry"}}
 	var enrichKeys = []string{"procEntry.operState"}
 	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys)
 }
 
-func (prh *postReqHandler) vxlanSysProcSysHandler(w http.ResponseWriter, r *http.Request) {
+func (prh *postReqHandler) sysProcSysHandler(w http.ResponseWriter, r *http.Request) {
 	var path = [][]string{{"procSysLoad", "procSysMemUsed", "procSysCpuSummary"}}
 	var enrichKeys = []string{}
 	worker(prh.esClient, r, path, prh.enrichmentMap, enrichKeys)
@@ -277,12 +277,12 @@ func main() {
 	var enrichmentMap map[string]map[string]int = enrichmentMapCreate()
 
 	postReqHandler := &postReqHandler{esClient: esClient, enrichmentMap: enrichmentMap}
-	http.HandleFunc("/network/vxlan:sys/eps", postReqHandler.vxlanSysEpsHandler)
-	http.HandleFunc("/network/vxlan:sys/bd", postReqHandler.vxlanSysBdHandler)
-	http.HandleFunc("/network/interface:sys/intf", postReqHandler.vxlanSysIntfHandler)
-	http.HandleFunc("/network/environment:sys/ch", postReqHandler.vxlanSysChHandler)
-	http.HandleFunc("/network/resources:sys/proc", postReqHandler.vxlanSysProcHandler)
-	http.HandleFunc("/network/resources:sys/procsys", postReqHandler.vxlanSysProcSysHandler)
+	http.HandleFunc("/network/vxlan:sys/eps", postReqHandler.sysEpsHandler)
+	http.HandleFunc("/network/vxlan:sys/bd", postReqHandler.sysBdHandler)
+	http.HandleFunc("/network/interface:sys/intf", postReqHandler.sysIntfHandler)
+	http.HandleFunc("/network/environment:sys/ch", postReqHandler.sysChHandler)
+	http.HandleFunc("/network/resources:sys/proc", postReqHandler.sysProcHandler)
+	http.HandleFunc("/network/resources:sys/procsys", postReqHandler.sysProcSysHandler)
 	http.HandleFunc("/network/sys/bgp", postReqHandler.customSysBgp)
 	http.HandleFunc("/network/sys/ospf", postReqHandler.customSysOspf)
 

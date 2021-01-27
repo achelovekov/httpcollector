@@ -161,104 +161,12 @@ func main() {
 				  "adminStMultisiteBrdrGwLoopackIntf": "disabled",
 				  "advertiseVmac": false,
 				  "anycastIntf": "unspecified",
-				  "autoRemapReplicationServers": false,
-				  "cfgSrc": "unknown",
-				  "childAction": "",
-				  "controllerId": 0,
-				  "delayRestoreMsBrdrGwExpiryTime": "NA",
-				  "descr": "",
-				  "encapType": "unknown",
-				  "epId": 1,
-				  "holdDownTime": 500,
-				  "holdDownTimerExpiryTime": "NA",
-				  "holdUpTime": 30,
-				  "holdUpTimerExpiryTime": "NA",
-				  "hostReach": "bgp",
-				  "ingressReplProtoBGP": false,
-				  "learningMode": "CP",
-				  "mac": "00:3A:9C:5B:6A:87",
-				  "mcastGroupL2": "0.0.0.0",
-				  "mcastGroupL3": "0.0.0.0",
-				  "modTs": "2021-01-11T12:12:29.611+00:00",
-				  "multisiteBordergwInterface": "unspecified",
-				  "multisiteBrdrGwIntfIp": "0.0.0.0",
-				  "operEncapType": "vxlan",
-				  "operStAnycastSrcIntf": "down",
-				  "operStMultisiteBrdrGwLoopbackIntf": "down",
-				  "operStSrcLoopbackIntf": "up",
-				  "operState": "up",
-				  "primaryIp": "172.17.1.2",
-				  "primaryIpv6": "",
-				  "rn": "epId-1",
-				  "secondaryIp": "172.17.1.101",
-				  "secondaryIpv6": "",
-				  "sourceInterface": "lo1",
-				  "status": "",
-				  "suppressARP": false,
-				  "virtualMac": "00:00:00:00:00:00",
-				  "virtualRtrMac": "02:00:AC:11:01:65",
-				  "virtualRtrMacReorig": "00:00:00:00:00:00",
-				  "vpcVIPNotified": true
-				},
-				"children": [
-				  {
-					"nvoPeers": {
-					  "attributes": {
-						"childAction": "",
-						"modTs": "2021-01-11T11:52:27.839+00:00",
-						"rn": "peers",
-						"status": ""
-					  },
-					  "children": [
-						{
-						  "nvoDyPeer": {
-							"attributes": {
-							  "createTs": "2021-01-11T19:09:01.979+00:00",
-							  "firstVNI": 2012007,
-							  "ip": "172.17.1.203",
-							  "mac": "BC:4A:56:CD:EC:3F",
-							  "rn": "dy_peer-[172.17.1.203]",
-							  "state": "Up",
-							  "upStateTransitionTs": "2021-01-11T19:09:02.012+00:00"
-							}
-						  }
-						},
-						{
-						  "nvoDyPeer": {
-							"attributes": {
-							  "createTs": "2021-01-11T19:09:01.978+00:00",
-							  "firstVNI": 2012007,
-							  "ip": "172.17.1.202",
-							  "mac": "D4:C9:3C:85:62:7F",
-							  "rn": "dy_peer-[172.17.1.202]",
-							  "state": "Up",
-							  "upStateTransitionTs": "2021-01-11T19:09:02.009+00:00"
-							}
-						  }
-						},
-						{
-						  "nvoDyPeer": {
-							"attributes": {
-							  "createTs": "2021-01-11T19:09:01.976+00:00",
-							  "firstVNI": 2012007,
-							  "ip": "172.17.1.201",
-							  "mac": "D4:C9:3C:85:62:3F",
-							  "rn": "dy_peer-[172.17.1.201]",
-							  "state": "Up",
-							  "upStateTransitionTs": "2021-01-11T19:09:02.008+00:00"
-							}
-						  }
-						}
-					  ]
-					}
-				  }
-				]
+				}
 			  }
 			}
-		  ]
 		}
-	  }
-`
+	}
+	`
 
 	jsonMap := make(map[string]interface{})
 	err := json.Unmarshal([]byte(Raw), &jsonMap)
