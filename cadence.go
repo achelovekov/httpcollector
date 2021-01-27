@@ -22,6 +22,10 @@ func enrich(src map[string]interface{}, enrichmentMap map[string]map[string]int,
 			if reflect.ValueOf(v).Type().Kind() == reflect.Int {
 				v = strconv.Itoa(v.(int))
 			}
+			if reflect.ValueOf(v).Type().Kind() == reflect.Float64 {
+				v = strconv.FormatFloat(v, 'E', -1, 64)
+				fmt.Printf("value of float64: %v\n", v)
+			}
 			src[key+"/code"] = enrichmentMap[key][v.(string)]
 		}
 	}
