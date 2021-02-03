@@ -208,7 +208,7 @@ func main() {
 	http.HandleFunc("/network/rib", postReqHandler.ribhandler)
 	http.HandleFunc("/network/mac-all", postReqHandler.macAllHandler)
 	http.HandleFunc("/network/adjacency", postReqHandler.adjacencyHandler)
-	//http.HandleFunc("/network/EVENT-LIST", postReqHandler.eventHandler)
+	http.HandleFunc("/network/EVENT-LIST", postReqHandler.eventHandler)
 	//http.HandleFunc("/network/vxlan:sys/eps", postReqHandler.sysEpsHandler)
 	//http.HandleFunc("/network/vxlan:sys/bd", postReqHandler.sysBdHandler)
 
