@@ -79,7 +79,7 @@ func flattenMap(esClient *es.Client, src map[string]interface{}, path [][]string
 				enrich(newHeader, enrichmentMap, enrichKeys)
 				filter(newHeader, filterList)
 				//PrettyPrint(newHeader)
-				esPush(esClient, "golang-index", newHeader)
+				esPush(esClient, "telemetry-cadence", newHeader)
 			}
 		}
 	}
