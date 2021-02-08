@@ -48,7 +48,7 @@ func esPush(esClient *es.Client, indexName string, body map[string]interface{}) 
 	}
 	defer res.Body.Close()
 
-	log.Println(res)
+	//log.Println(res)
 }
 
 func PrettyPrint(src map[string]interface{}) {
@@ -126,11 +126,11 @@ func Flatten(esClient *es.Client, src map[string]interface{}, path []string, pat
 	}
 
 	if pathIndex == len(path) {
-		PrettyPrint(newHeader)
+		//PrettyPrint(newHeader)
 		esPush(esClient, "golang-events", newHeader)
 	} else if reflect.ValueOf(src[path[pathIndex]]).Len() == 0 {
 		newHeader[path[pathIndex]] = make([]interface{}, 0)
-		PrettyPrint(newHeader)
+		//PrettyPrint(newHeader)
 		esPush(esClient, "golang-events", newHeader)
 	} else {
 		for i := 0; i < reflect.ValueOf(src[path[pathIndex]]).Len(); i++ {
@@ -154,15 +154,15 @@ func worker(esClient *es.Client, r *http.Request, path []string) {
 			panic(err)
 		}
 
-		srcJSON, err := json.MarshalIndent(src, "", "  ")
-		if err != nil {
-			log.Fatalf(err.Error())
-		}
-		fmt.Printf("MarshalIndent function output %s\n", string(srcJSON))
+		/* 		srcJSON, err := json.MarshalIndent(src, "", "  ")
+		   		if err != nil {
+		   			log.Fatalf(err.Error())
+		   		}
+		   		fmt.Printf("MarshalIndent function output %s\n", string(srcJSON))
 
-		if err != nil {
-			log.Fatalf(err.Error())
-		}
+		   		if err != nil {
+		   			log.Fatalf(err.Error())
+		   		} */
 
 		var pathIndex int
 
