@@ -126,11 +126,11 @@ func Flatten(esClient *es.Client, src map[string]interface{}, path []string, pat
 	}
 
 	if pathIndex == len(path) {
-		PrettyPrint(newHeader)
+		//PrettyPrint(newHeader)
 		esPush(esClient, "telemetry-events", newHeader)
 	} else if reflect.ValueOf(src[path[pathIndex]]).Len() == 0 {
 		newHeader[path[pathIndex]] = make([]interface{}, 0)
-		PrettyPrint(newHeader)
+		//PrettyPrint(newHeader)
 		esPush(esClient, "telemetry-events", newHeader)
 	} else {
 		for i := 0; i < reflect.ValueOf(src[path[pathIndex]]).Len(); i++ {
